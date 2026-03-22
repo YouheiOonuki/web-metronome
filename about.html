@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Metronome</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1><a href="./index.html" class="site-title-link">Metronome</a></h1>
+      <p class="tagline">Simple &amp; Free — no app, no login</p>
+    </header>
+
+    <main class="page-content">
+
+      <h2>About This Site</h2>
+
+      <section>
+        <h3>このサイトについて</h3>
+        <p>
+          このサイトは、ブラウザだけで使えるシンプルな無料 Web メトロノームです。
+          アプリのインストール不要・ログイン不要で、スマートフォン・タブレット・PC のどのデバイスでも即座に使えます。
+        </p>
+      </section>
+
+      <section>
+        <h3>主な機能</h3>
+        <ul>
+          <li><strong>BPM 設定</strong> — スライダー・数値入力・増減ボタンで 40〜240 BPM を自由に設定</li>
+          <li><strong>タップテンポ</strong> — TAP ボタンを連打するだけで曲のテンポを自動計測</li>
+          <li><strong>正確なクリック音</strong> — Web Audio API のスケジューリングで音のズレを最小化</li>
+          <li><strong>BPM の記憶</strong> — 前回設定した BPM をブラウザに自動保存</li>
+          <li><strong>レスポンシブデザイン</strong> — スマホでも快適に操作できる UI</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3>開発者について</h3>
+        <p>
+          このサイトは <strong>Youhei</strong> が個人プロジェクトとして開発・運営しています。
+          音楽と Web 技術が好きで、練習中に「シンプルで軽いメトロノームがほしい」という思いから作りました。
+        </p>
+        <p>
+          フィードバックや改善要望は GitHub Issues からどうぞ。
+        </p>
+      </section>
+
+      <section>
+        <h3>技術スタック</h3>
+        <ul>
+          <li>HTML / CSS / JavaScript（フレームワーク・ライブラリなし）</li>
+          <li>Web Audio API（音声スケジューリング）</li>
+          <li>localStorage（BPM の保存）</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <nav class="footer-nav" aria-label="サイト内ナビゲーション">
+        <a href="./index.html">Home</a>
+        <a href="./about.html" aria-current="page">About</a>
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms</a>
+      </nav>
+      <p class="footer-copy">&copy; 2025 Youhei. All rights reserved.</p>
+    </footer>
+
+  </div>
+</body>
+</html>

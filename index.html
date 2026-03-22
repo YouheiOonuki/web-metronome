@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Metronome — シンプル無料メトロノーム</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="container">
+
+    <!-- ヘッダー -->
+    <header>
+      <h1>Metronome</h1>
+      <p class="tagline">Simple &amp; Free — no app, no login</p>
+    </header>
+
+    <main>
+
+      <!-- BPM 表示エリア -->
+      <section class="bpm-section">
+        <div class="bpm-display" id="bpmDisplay" aria-live="polite">120</div>
+        <div class="bpm-label">BPM</div>
+      </section>
+
+      <!-- BPM コントロール -->
+      <section class="bpm-controls">
+        <button class="btn btn-adjust" id="btnMinus" aria-label="BPM を下げる">−</button>
+        <input
+          type="range"
+          id="bpmSlider"
+          min="1"
+          max="500"
+          value="120"
+          aria-label="BPM スライダー"
+        />
+        <button class="btn btn-adjust" id="btnPlus" aria-label="BPM を上げる">＋</button>
+      </section>
+
+      <!-- BPM 直接入力 -->
+      <section class="bpm-input-section">
+        <input
+          type="number"
+          id="bpmInput"
+          min="1"
+          max="500"
+          value="120"
+          aria-label="BPM 数値入力"
+        />
+      </section>
+
+      <!-- 再生 / 停止 -->
+      <section class="playback-section">
+        <button class="btn btn-play" id="btnPlay" aria-pressed="false">▶ 再生</button>
+      </section>
+
+      <!-- タップテンポ -->
+      <section class="tap-section">
+        <button class="btn btn-tap" id="btnTap" aria-label="タップテンポ">
+          TAP
+        </button>
+        <p class="tap-hint">連続タップで BPM を計測</p>
+      </section>
+
+    </main>
+
+    <!-- サイトフッター（ナビ + 著作権） -->
+    <footer class="site-footer">
+      <nav class="footer-nav" aria-label="サイト内ナビゲーション">
+        <a href="./index.html" aria-current="page">Home</a>
+        <a href="./about.html">About</a>
+        <a href="./privacy.html">Privacy Policy</a>
+        <a href="./terms.html">Terms</a>
+      </nav>
+      <p class="footer-copy">&copy; 2025 Youhei. All rights reserved.</p>
+    </footer>
+
+    <!-- 広告枠 -->
+    <footer class="ad-area">
+      <div class="ad-slot">
+        <!-- AD_PLACEHOLDER: Google AdSense code will be inserted here -->
+        <!-- ↓ AdSense コードをここに貼り付けてこの行を削除してください -->
+        <span class="ad-placeholder-label">Advertisement</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>
