@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="washi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>使い方・よくある質問｜無料オンラインメトロノーム</title>
+  <meta name="description" content="無料オンラインメトロノームの使い方ガイドとよくある質問。BPM の決め方、変則拍子とグルーピング、アクセント、裏拍・3連などの細分化、テンポアップ練習、ホーム画面への追加（オフライン利用）を詳しく解説します。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yorozu-craft.com/web-metronome/guide.html">
+
+  <meta property="og:title" content="使い方・よくある質問｜無料オンラインメトロノーム">
+  <meta property="og:description" content="オンラインメトロノームの使い方を詳しく解説。変則拍子、アクセント、裏拍・3連の細分化、テンポアップ練習、オフライン利用など。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/web-metronome/guide.html">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://yorozu-craft.com/web-metronome/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="yorozu-craft">
+
+  <meta name="theme-color" content="#8b4513">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+
+  <!-- FAQ構造化データ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "このメトロノームは無料ですか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "はい、完全無料です。会員登録やアプリのインストールも不要で、ブラウザからすぐにお使いいただけます。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "変則拍子（5/8 や 7/8）に対応していますか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "はい。「拍子・リズム」のプリセットから 5/8・7/8・11/8 などを選ぶか、拍数と分母を自由に設定できます。「2+2+3」のようにグルーピングを入力すると、まとまりの頭にアクセントが付きます。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "裏拍だけを鳴らせますか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "はい。「細分化」で「裏拍のみ」を選ぶと、表拍を鳴らさずに裏拍だけが鳴ります。8分・3連・16分・シャッフルも選べます。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "オフラインでも使えますか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "はい。一度ページを開くと必要なファイルがブラウザに保存されるため、その後は電波のない場所でも使えます。ホーム画面に追加すると、アプリのように起動できます。"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "スマートフォンでも使えますか？",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "はい。スマートフォン・タブレット・パソコンのブラウザでお使いいただけます。音が出ない場合は、端末の音量と、iPhone の消音モード（着信/消音スイッチ）を確認してください。"
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Google AdSense（サイト所有確認 + 広告配信スクリプト） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <nav class="site-nav" aria-label="メインナビゲーション">
+    <a href="./" class="nav-brand">メトロノーム</a>
+    <ul class="nav-links">
+      <li><a href="./">ホーム</a></li>
+      <li><a href="./guide.html" aria-current="page">使い方</a></li>
+      <li><a href="./guide.html#faq">よくある質問</a></li>
+      <li><a href="./about.html">運営者情報</a></li>
+      <li><a href="./privacy-policy.html">プライバシーポリシー</a></li>
+    </ul>
+  </nav>
+
+  <main class="app-main legal-page">
+
+    <article class="content-section">
+      <h1>使い方ガイド</h1>
+      <p>オンラインメトロノームの基本的な使い方をご紹介します。</p>
+
+      <div class="guide-content">
+        <div class="guide-step">
+          <h2>1. テンポ（BPM）を決める</h2>
+          <p>スライダー、「＋」「－」ボタン、数値入力のいずれかで BPM（1 分間の拍数）を 1〜500 の範囲で設定します。「＋」「－」は長押しすると連続で変わります。</p>
+          <p>曲のテンポがわからないときは、曲に合わせて「TAP」ボタンを 4 回ほど押してください。押した間隔から BPM を自動で計測します。BPM の下には、Andante や Allegro などのテンポの目安も表示されます。</p>
+        </div>
+
+        <div class="guide-step">
+          <h2>2. 拍子を選ぶ</h2>
+          <p>「拍子・リズム」の「プリセット」から、4/4・3/4・6/8 などのよく使う拍子や、5/8・7/8・11/8 などの変則拍子を選べます。拍数（1〜16）と分母（2・4・8・16）を自由に組み合わせることもできます。</p>
+        </div>
+
+        <div class="guide-step">
+          <h2>3. 再生する</h2>
+          <p>「再生」ボタンを押すとクリック音が鳴り始めます。拍インジケーター（縦のバー）が今の拍に合わせて光り、1 拍目（強拍）は色が変わるので、小節の頭がひと目でわかります。</p>
+          <p>パソコンでは、入力欄の外で <kbd>Space</kbd> キーを押しても再生・停止できます。</p>
+        </div>
+      </div>
+
+      <h2>便利な機能</h2>
+
+      <h3>アクセント（拍ごとの強弱）</h3>
+      <p>拍インジケーターの縦のバーをタップするたびに、その拍が「強 → 中 → 弱 → 休符」と切り替わります。バーの高さが強さを表し、休符にした拍は鳴りません。「アクセントを初期化」で元の強弱に戻せます。</p>
+
+      <h3>変則拍子とグルーピング</h3>
+      <p>「グルーピング」に「2+2+3」のように入力すると、まとまりごとの頭に中アクセントが付き、拍インジケーターにも区切りが表示されます。7/8 を「2+2+3」「3+2+2」と数え分けるときや、6/8 を「3+3」で数えるときに便利です。数字の合計は拍数と同じにしてください。</p>
+
+      <h3>細分化（裏拍・3連など）</h3>
+      <p>「細分化」で、1 拍の中を細かく刻めます。刻みの音量は「サウンド」の「細分化の音量」で調整できます。</p>
+      <ul>
+        <li><strong>8分</strong> — 1 拍を 2 つに分けて刻みます</li>
+        <li><strong>3連</strong> — 1 拍を 3 つに分けて刻みます</li>
+        <li><strong>16分</strong> — 1 拍を 4 つに分けて刻みます</li>
+        <li><strong>シャッフル</strong> — 3連の真ん中を抜いた、跳ねるリズムです</li>
+        <li><strong>裏拍のみ</strong> — 表拍を鳴らさず、裏拍だけを鳴らします。裏拍でリズムを取る練習に</li>
+      </ul>
+
+      <h3>練習モード</h3>
+      <p><strong>テンポアップ</strong>をオンにすると、「4 小節ごとに 2 BPM ずつ、160 BPM まで」のように、決めた小節数ごとにテンポが少しずつ変わります。目標を今より遅く設定すると、だんだん遅くなります。</p>
+      <p><strong>無音小節</strong>をオンにすると、「3 小節鳴らして 1 小節無音」のように、途中で音が消えます。無音の間も自分でテンポを保てているか、次の小節の頭で確かめられます。</p>
+
+      <h3>音色と音量</h3>
+      <p>「サウンド」で、電子音・ウッドブロック・ハイハットの 3 種類から音色を選べます。全体の音量と細分化の音量は別々に調整できます。</p>
+
+      <h3>テーマ切り替え</h3>
+      <p>6種類のテーマをご用意しています。「設定」から好みのデザインに切り替えてください。</p>
+      <ul>
+        <li><strong>和紙風</strong> — 温かみのある和風デザイン（デフォルト）</li>
+        <li><strong>森</strong> — 深緑ベースの落ち着いた配色</li>
+        <li><strong>藍染</strong> — 伝統的な藍色をモチーフにした配色</li>
+        <li><strong>ダーク</strong> — ダークブルーのスタイリッシュなデザイン</li>
+        <li><strong>メタル</strong> — 黒×赤のハードな配色</li>
+        <li><strong>ネオンサイバー</strong> — 鮮やかなネオンカラー</li>
+      </ul>
+
+      <h3>再生中は画面を消さない</h3>
+      <p>スマートフォンを譜面台に置いて使うときに、再生中は画面が暗くならないようにします。「設定」でオン・オフを切り替えられます（対応しているブラウザでのみ表示されます）。</p>
+
+      <h3>キーボード操作</h3>
+      <ul>
+        <li><kbd>Space</kbd> — 再生 / 停止</li>
+        <li><kbd>↑</kbd> <kbd>↓</kbd> — BPM を 1 ずつ上げ下げ（<kbd>Shift</kbd> を押しながらだと 10 ずつ）</li>
+        <li><kbd>T</kbd> — タップテンポ</li>
+      </ul>
+
+      <h3 id="install">ホーム画面に追加する（オフラインで使う）</h3>
+      <p>ホーム画面に追加すると、アプリのようにワンタップで起動できます。一度開いておけば、電波の届かない練習室やスタジオでも使えます。</p>
+      <ul>
+        <li><strong>Android・パソコン（Chrome / Edge）</strong> — 「設定」の「ホーム画面に追加」ボタン、またはブラウザのメニューの「アプリをインストール」から追加できます</li>
+        <li><strong>iPhone・iPad（Safari）</strong> — 画面下の共有ボタンをタップし、「ホーム画面に追加」を選びます</li>
+      </ul>
+
+      <h2>こんな場面で使えます</h2>
+      <ul class="use-cases">
+        <li><strong>楽器の基礎練習</strong> — スケールやロングトーンを一定のテンポで</li>
+        <li><strong>変則拍子の曲の練習</strong> — 5/8・7/8 のプログレや民族音楽、ゲーム音楽に</li>
+        <li><strong>リズム感のトレーニング</strong> — 裏拍のみ・無音小節でテンポキープを鍛える</li>
+        <li><strong>苦手なフレーズの克服</strong> — テンポアップで少しずつ速くしていく</li>
+        <li><strong>バンド・合奏の練習</strong> — タップで曲のテンポを測って共有</li>
+        <li><strong>ダンスや運動</strong> — 一定のリズムで体を動かしたいときに</li>
+      </ul>
+    </article>
+
+    <article id="faq" class="content-section">
+      <h2>よくある質問</h2>
+      <dl class="faq-list">
+        <dt>このメトロノームは無料ですか？</dt>
+        <dd>はい、完全無料です。会員登録やアプリのインストールも不要で、ブラウザからすぐにお使いいただけます。</dd>
+
+        <dt>変則拍子（5/8 や 7/8）に対応していますか？</dt>
+        <dd>はい。「拍子・リズム」のプリセットから 5/8・7/8・11/8 などを選ぶか、拍数と分母を自由に設定できます。「2+2+3」のようにグルーピングを入力すると、まとまりの頭にアクセントが付きます。</dd>
+
+        <dt>裏拍だけを鳴らせますか？</dt>
+        <dd>はい。「細分化」で「裏拍のみ」を選ぶと、表拍を鳴らさずに裏拍だけが鳴ります。8分・3連・16分・シャッフルも選べます。</dd>
+
+        <dt>オフラインでも使えますか？</dt>
+        <dd>はい。一度ページを開くと必要なファイルがブラウザに保存されるため、その後は電波のない場所でも使えます。ホーム画面に追加すると、アプリのように起動できます。</dd>
+
+        <dt>スマートフォンでも使えますか？</dt>
+        <dd>はい。スマートフォン・タブレット・パソコンのブラウザでお使いいただけます。音が出ない場合は、端末の音量と、iPhone の消音モード（着信/消音スイッチ）を確認してください。</dd>
+
+        <dt>6/8 拍子を付点4分音符で数えたいときは？</dt>
+        <dd>BPM は 1 拍（分母の音符）あたりの数です。6/8 で付点4分音符 = 60 にしたい場合は、8分音符が 1 分間に 180 回なので、BPM を 180 に設定してください。グルーピングを「3+3」にすると、付点4分音符ごとにアクセントが付きます。</dd>
+
+        <dt>テンポは正確ですか？</dt>
+        <dd>クリック音は Web Audio API で鳴らす時刻を先に予約しているため、画面の処理が重くなってもずれにくい仕組みです。ただし、端末やブラウザの状態によってわずかな誤差が出る場合があります。</dd>
+
+        <dt>設定は保存されますか？</dt>
+        <dd>はい。BPM・拍子・アクセント・音色などの設定は、お使いのブラウザのローカルストレージに保存され、次回開いたときに復元されます。外部に送信されることはありません。ブラウザのデータを消去すると削除されます。</dd>
+
+        <dt>対応しているブラウザは？</dt>
+        <dd>Chrome、Firefox、Safari、Edge など、主要なモダンブラウザすべてに対応しています。</dd>
+      </dl>
+    </article>
+
+  </main>
+
+  <footer class="app-footer">
+    <nav class="footer-nav" aria-label="フッターナビゲーション">
+      <ul>
+        <li><a href="../">yorozu-craft トップ</a></li>
+        <li><a href="./">ホーム</a></li>
+        <li><a href="./guide.html" aria-current="page">使い方</a></li>
+        <li><a href="./guide.html#faq">よくある質問</a></li>
+        <li><a href="./about.html">運営者情報</a></li>
+        <li><a href="./privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </nav>
+    <p class="copyright">&copy; 2026 yorozu-craft. All rights reserved.</p>
+
+    <div class="ad-container">
+      <!-- AD_PLACEHOLDER: Google AdSense code will be inserted here -->
+      <div class="ad-placeholder ad-responsive" aria-hidden="true">
+        <p>広告スペース</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

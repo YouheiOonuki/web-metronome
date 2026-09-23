@@ -75,6 +75,9 @@ const LEVEL_GAIN  = { 3: 1.0, 2: 0.8, 1: 0.6, sub: 0.45 };
 const LEVEL_PITCH = { 3: 2.0, 2: 1.5, 1: 1.0, sub: 0.75 };
 const SOUNDS = ['beep', 'wood', 'hihat'];
 
+/** 見た目のテーマ（web-roulette と共通の 6 種類） */
+const THEMES = ['washi', 'mori', 'aizome', 'dark', 'metal', 'neon'];
+
 const DEFAULTS = {
   bpm: 120,
   beats: 4,
@@ -87,6 +90,8 @@ const DEFAULTS = {
   subVolume: 0.5,
   trainer: { enabled: false, everyBars: 4, step: 2, target: 160 },
   gap:     { enabled: false, playBars: 3, muteBars: 1 },
+  theme: 'washi',
+  wakeLock: true,          // 再生中は画面を消さない
 };
 
 // =============================================
@@ -123,6 +128,12 @@ const gapEnabled      = $('gapEnabled');
 const gapPlay         = $('gapPlay');
 const gapMute         = $('gapMute');
 const subdivisionRadios = document.querySelectorAll('input[name="subdivision"]');
+const metronomeSection = $('metronomeSection');
+const themeSelect      = $('themeSelect');
+const wakeLockSetting  = $('wakeLockSetting');
+const wakeLockToggle   = $('wakeLockToggle');
+const installSetting   = $('installSetting');
+const btnInstall       = $('btnInstall');
 
 // =============================================
 // 状態変数
@@ -141,6 +152,8 @@ let visualQueue  = [];     // 描画待ちの拍 { time, beat, level, silent }
 let rafId        = null;
 let flashTimeout = null;
 let tapTimes     = [];
+let wakeLock     = null;   // 画面スリープ防止のロック
+let installPrompt = null;  // ホーム画面への追加（beforeinstallprompt）
 
 const ticker = createTicker(scheduler);
 
@@ -197,6 +210,8 @@ function loadSettings() {
   s.gap.enabled       = !!s.gap.enabled;
   s.gap.playBars      = clamp(toInt(s.gap.playBars, 3), 1, 64);
   s.gap.muteBars      = clamp(toInt(s.gap.muteBars, 1), 1, 64);
+  s.theme    = THEMES.includes(s.theme) ? s.theme : DEFAULTS.theme;
+  s.wakeLock = s.wakeLock !== false;
   return s;
 }
 
@@ -524,6 +539,8 @@ function startMetronome() {
   btnPlay.textContent = '■ 停止';
   btnPlay.classList.add('playing');
   btnPlay.setAttribute('aria-pressed', 'true');
+  metronomeSection.classList.add('playing');
+  requestWakeLock();
 }
 
 function stopMetronome() {
@@ -544,6 +561,51 @@ function stopMetronome() {
   btnPlay.textContent = '▶ 再生';
   btnPlay.classList.remove('playing');
   btnPlay.setAttribute('aria-pressed', 'false');
+  metronomeSection.classList.remove('playing');
+  releaseWakeLock();
+}
+
+// =============================================
+// 画面のスリープ防止（Screen Wake Lock API）
+// =============================================
+
+/**
+ * 再生中に画面が暗くならないようにする。
+ * スマホを譜面台に置いて使うとき、画面が消えると表示が止まり、端末によっては音も止まるため。
+ * タブを切り替えるとブラウザが自動で解除するので、戻ってきたら取り直す（visibilitychange）。
+ */
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator) || !settings.wakeLock || !isPlaying || wakeLock) return;
+  try {
+    const lock = await navigator.wakeLock.request('screen');
+    // 取得を待つ間に停止した・設定を切った・別の取得が先に済んだ場合は返す
+    if (!isPlaying || !settings.wakeLock || wakeLock) {
+      lock.release().catch(() => {});
+      return;
+    }
+    wakeLock = lock;
+    lock.addEventListener('release', () => {
+      if (wakeLock === lock) wakeLock = null;
+    });
+  } catch {
+    // 省電力モードなどで拒否された場合は何もしない（メトロノーム自体は動く）
+  }
+}
+
+function releaseWakeLock() {
+  if (!wakeLock) return;
+  wakeLock.release().catch(() => {});
+  wakeLock = null;
+}
+
+// =============================================
+// テーマ
+// =============================================
+
+function applyTheme(theme) {
+  settings.theme = THEMES.includes(theme) ? theme : DEFAULTS.theme;
+  document.documentElement.setAttribute('data-theme', settings.theme);
+  themeSelect.value = settings.theme;
 }
 
 function togglePlayback() {
@@ -663,6 +725,9 @@ function renderControls() {
   gapEnabled.checked = settings.gap.enabled;
   gapPlay.value      = settings.gap.playBars;
   gapMute.value      = settings.gap.muteBars;
+  applyTheme(settings.theme);
+  wakeLockToggle.checked = settings.wakeLock;
+  wakeLockSetting.hidden = !('wakeLock' in navigator);
 }
 
 // =============================================
@@ -827,6 +892,40 @@ function bindEvents() {
   bindNumber(gapPlay, 1, 64, (v) => { settings.gap.playBars = v; });
   bindNumber(gapMute, 1, 64, (v) => { settings.gap.muteBars = v; });
 
+  // 設定: テーマ・画面スリープ防止
+  themeSelect.addEventListener('change', () => {
+    applyTheme(themeSelect.value);
+    saveSettings();
+  });
+  wakeLockToggle.addEventListener('change', () => {
+    settings.wakeLock = wakeLockToggle.checked;
+    if (settings.wakeLock) requestWakeLock();
+    else releaseWakeLock();
+    saveSettings();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') requestWakeLock();
+  });
+
+  // ホーム画面への追加（インストールできるブラウザでだけボタンを出す）
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); // ブラウザ標準の案内の代わりに「設定」のボタンから追加してもらう
+    installPrompt = e;
+    installSetting.hidden = false;
+  });
+  window.addEventListener('appinstalled', () => {
+    installPrompt = null;
+    installSetting.hidden = true;
+  });
+  btnInstall.addEventListener('click', async () => {
+    if (!installPrompt) return;
+    const prompt = installPrompt;
+    installPrompt = null; // 同じイベントは 1 回しか使えない
+    installSetting.hidden = true;
+    prompt.prompt();
+    await prompt.userChoice.catch(() => {});
+  });
+
   // キーボードショートカット
   document.addEventListener('keydown', handleShortcut);
   document.addEventListener('keyup', (e) => {
@@ -913,3 +1012,12 @@ function setupHoldButton(btn, callback) {
 // =============================================
 renderControls();
 bindEvents();
+
+// オフラインでも使えるように Service Worker を登録する（https または localhost でのみ動作）
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      // file:// で開いた場合などは登録できないが、メトロノーム自体は動く
+    });
+  });
+}
