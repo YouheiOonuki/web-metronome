@@ -1,206 +1,292 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-theme="washi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Metronome — シンプル無料メトロノーム</title>
-  <link rel="stylesheet" href="./style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>無料メトロノーム｜変則拍子・アクセント・裏拍対応・ブラウザで即使える</title>
+  <meta name="description" content="完全無料のオンラインメトロノーム。BPM を決めて再生を押すだけ。5/8・7/8 などの変則拍子、拍ごとのアクセント、裏拍・3連・16分の細分化、テンポアップ練習に対応。登録不要・インストール不要でブラウザからすぐ使え、ホーム画面に追加すればオフラインでも動きます。">
+  <meta name="keywords" content="メトロノーム,無料,オンライン,変則拍子,アクセント,裏拍,3連符,BPM,テンポ,タップテンポ,リズム練習">
+  <meta name="author" content="yorozu-craft">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yorozu-craft.com/web-metronome/">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="無料メトロノーム｜変則拍子・アクセント・裏拍対応">
+  <meta property="og:description" content="BPM を決めて再生を押すだけ。変則拍子・拍ごとのアクセント・裏拍や3連の細分化に対応した無料オンラインメトロノーム。登録不要で今すぐ使えます。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/web-metronome/">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://yorozu-craft.com/web-metronome/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="yorozu-craft">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="無料メトロノーム｜変則拍子・アクセント・裏拍対応">
+  <meta name="twitter:description" content="BPM を決めて再生を押すだけ。変則拍子・アクセント・裏拍に対応した無料メトロノーム。">
+
+  <!-- テーマカラー -->
+  <meta name="theme-color" content="#8b4513">
+
+  <!-- PWA（ホーム画面に追加・オフライン対応） -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="メトロノーム">
+
+  <!-- 構造化データ (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "オンラインメトロノーム",
+    "description": "完全無料のオンラインメトロノーム。変則拍子、拍ごとのアクセント、裏拍・3連・16分の細分化、タップテンポ、テンポアップ練習に対応。",
+    "url": "https://yorozu-craft.com/web-metronome/",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "JPY"
+    },
+    "inLanguage": "ja",
+    "browserRequirements": "Requires JavaScript",
+    "softwareVersion": "2.0",
+    "featureList": [
+      "BPM 1〜500",
+      "変則拍子（5/8・7/8・11/8 など）とグルーピング",
+      "拍ごとのアクセント（強・中・弱・休符）",
+      "細分化（8分・3連・16分・シャッフル・裏拍のみ）",
+      "タップテンポ",
+      "テンポアップ練習・無音小節練習",
+      "3種類の音色と音量調整",
+      "6種類のテーマ",
+      "ホーム画面に追加・オフライン動作"
+    ]
+  }
+  </script>
+
+  <!-- Google AdSense（サイト所有確認 + 広告配信スクリプト） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <!-- 保存済みのテーマを描画前に適用する（読み込み時のちらつき防止） -->
+  <script>
+    try {
+      var savedTheme = JSON.parse(localStorage.getItem('metronome-settings') || '{}').theme;
+      if (/^(washi|mori|aizome|dark|metal|neon)$/.test(savedTheme)) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+    } catch (e) {}
+  </script>
+
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div class="container">
 
-    <!-- ヘッダー -->
-    <header>
-      <h1>Metronome</h1>
-      <p class="tagline">Simple &amp; Free — no app, no login</p>
-    </header>
+  <header class="app-header">
+    <h1>無料オンラインメトロノーム</h1>
+    <p class="subtitle">BPM を決めて「再生」を押すだけ！変則拍子・アクセント・裏拍に対応。登録不要・完全無料</p>
+  </header>
 
-    <main>
+  <main class="app-main">
 
-      <!-- BPM 表示エリア -->
-      <section class="bpm-section">
+    <!-- ① メトロノーム（最上部） -->
+    <section class="metronome-section" id="metronomeSection" aria-label="メトロノーム">
+      <div class="tempo-display">
         <div class="bpm-display" id="bpmDisplay" aria-live="polite">120</div>
         <div class="bpm-label">BPM</div>
         <div class="tempo-name" id="tempoName">Allegro</div>
-      </section>
 
-      <!-- 拍インジケーター（タップでアクセント切替） -->
-      <section class="beat-section" aria-label="拍とアクセント">
-        <div class="beat-dots" id="beatDots"></div>
+        <!-- 拍インジケーター（タップでアクセント切替） -->
+        <div class="beat-dots" id="beatDots" role="group" aria-label="拍とアクセント"></div>
         <p class="beat-meta">
           <span class="meter-label" id="meterLabel">4/4</span>
           <span class="beat-hint">拍をタップでアクセント切替（強→中→弱→休）</span>
         </p>
-      </section>
+      </div>
 
-      <!-- BPM コントロール -->
-      <section class="bpm-controls">
-        <button class="btn btn-adjust btn-hold" id="btnMinus" aria-label="BPM を下げる">−</button>
-        <input
-          type="range"
-          id="bpmSlider"
-          min="1"
-          max="500"
-          value="120"
-          aria-label="BPM スライダー"
-        />
-        <button class="btn btn-adjust btn-hold" id="btnPlus" aria-label="BPM を上げる">＋</button>
-      </section>
+      <div class="bpm-controls">
+        <button class="btn btn-secondary btn-round btn-hold" id="btnMinus" aria-label="BPM を下げる">−</button>
+        <input type="range" id="bpmSlider" min="1" max="500" value="120" aria-label="BPM スライダー">
+        <button class="btn btn-secondary btn-round btn-hold" id="btnPlus" aria-label="BPM を上げる">＋</button>
+      </div>
 
-      <!-- BPM 直接入力 -->
-      <section class="bpm-input-section">
-        <input
-          type="number"
-          id="bpmInput"
-          min="1"
-          max="500"
-          value="120"
-          aria-label="BPM 数値入力"
-        />
-      </section>
+      <div class="bpm-input-row">
+        <label for="bpmInput">数値で入力</label>
+        <input type="number" id="bpmInput" min="1" max="500" value="120">
+      </div>
 
-      <!-- 再生 / 停止 -->
-      <section class="playback-section">
-        <button class="btn btn-play" id="btnPlay" aria-pressed="false">▶ 再生</button>
-      </section>
-
-      <!-- タップテンポ -->
-      <section class="tap-section">
-        <button class="btn btn-tap" id="btnTap" aria-label="タップテンポ">
-          TAP
-        </button>
-        <p class="tap-hint">連続タップで BPM を計測</p>
-      </section>
-
-      <!-- 拍子・リズム -->
-      <details class="panel" open>
-        <summary>拍子・リズム</summary>
-        <div class="panel-body">
-
-          <div class="field">
-            <label for="presetSelect">プリセット</label>
-            <select id="presetSelect"></select>
-          </div>
-
-          <div class="field">
-            <span class="field-label" id="meterFieldLabel">拍子</span>
-            <div class="meter-editor" role="group" aria-labelledby="meterFieldLabel">
-              <button class="btn btn-step btn-hold" id="btnBeatsMinus" aria-label="拍数を減らす">−</button>
-              <span class="beats-value" id="beatsValue" aria-live="polite">4</span>
-              <button class="btn btn-step btn-hold" id="btnBeatsPlus" aria-label="拍数を増やす">＋</button>
-              <span class="meter-slash">/</span>
-              <select id="unitSelect" aria-label="拍の音符（分母）">
-                <option value="2">2</option>
-                <option value="4">4</option>
-                <option value="8">8</option>
-                <option value="16">16</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field field-stack">
-            <label for="groupsInput">グルーピング</label>
-            <input type="text" id="groupsInput" inputmode="numeric" autocomplete="off"
-                   placeholder="例: 2+2+3（空欄なら 1 拍目のみ強拍）" />
-            <p class="field-hint" id="groupsHint" aria-live="polite"></p>
-          </div>
-
-          <div class="field field-stack">
-            <span class="field-label" id="subdivisionLabel">細分化</span>
-            <div class="segmented" role="radiogroup" aria-labelledby="subdivisionLabel">
-              <label><input type="radio" name="subdivision" value="quarter" checked /><span>なし</span></label>
-              <label><input type="radio" name="subdivision" value="eighth" /><span>8分</span></label>
-              <label><input type="radio" name="subdivision" value="triplet" /><span>3連</span></label>
-              <label><input type="radio" name="subdivision" value="sixteenth" /><span>16分</span></label>
-              <label><input type="radio" name="subdivision" value="shuffle" /><span>シャッフル</span></label>
-              <label><input type="radio" name="subdivision" value="offbeat" /><span>裏拍のみ</span></label>
-            </div>
-          </div>
-
-          <p class="panel-note">BPM は 1 拍（分母の音符）あたりの数です。</p>
-          <button class="btn btn-small" id="btnResetAccents" type="button">アクセントを初期化</button>
-        </div>
-      </details>
-
-      <!-- サウンド -->
-      <details class="panel">
-        <summary>サウンド</summary>
-        <div class="panel-body">
-          <div class="field">
-            <label for="soundSelect">音色</label>
-            <select id="soundSelect">
-              <option value="beep">電子音</option>
-              <option value="wood">ウッドブロック</option>
-              <option value="hihat">ハイハット</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="volumeSlider">音量</label>
-            <input type="range" id="volumeSlider" min="0" max="100" value="80" />
-          </div>
-          <div class="field">
-            <label for="subVolumeSlider">細分化の音量</label>
-            <input type="range" id="subVolumeSlider" min="0" max="100" value="50" />
-          </div>
-        </div>
-      </details>
-
-      <!-- 練習モード -->
-      <details class="panel">
-        <summary>練習モード</summary>
-        <div class="panel-body">
-          <div class="practice">
-            <label class="toggle">
-              <input type="checkbox" id="trainerEnabled" />
-              <span>テンポアップ</span>
-            </label>
-            <p class="practice-row">
-              <input type="number" id="trainerEvery" min="1" max="64" value="4" aria-label="何小節ごと" /> 小節ごとに
-              <input type="number" id="trainerStep" min="1" max="50" value="2" aria-label="変化量" /> BPM ずつ、
-              <input type="number" id="trainerTarget" min="1" max="500" value="160" aria-label="目標 BPM" /> BPM まで
-            </p>
-          </div>
-          <div class="practice">
-            <label class="toggle">
-              <input type="checkbox" id="gapEnabled" />
-              <span>無音小節（体内テンポ練習）</span>
-            </label>
-            <p class="practice-row">
-              <input type="number" id="gapPlay" min="1" max="64" value="3" aria-label="鳴らす小節数" /> 小節鳴らして
-              <input type="number" id="gapMute" min="1" max="64" value="1" aria-label="無音にする小節数" /> 小節無音
-            </p>
-          </div>
-        </div>
-      </details>
-
+      <div class="play-controls">
+        <button class="btn btn-start" id="btnPlay" aria-pressed="false">▶ 再生</button>
+        <button class="btn btn-secondary btn-tap" id="btnTap" aria-label="タップテンポ">TAP</button>
+      </div>
+      <p class="tap-hint">TAP を曲に合わせて連続で押すと BPM を計測します</p>
       <p class="shortcut-hint">
         <kbd>Space</kbd> 再生/停止　<kbd>↑</kbd><kbd>↓</kbd> BPM ±1（<kbd>Shift</kbd> で ±10）　<kbd>T</kbd> タップ
       </p>
+    </section>
 
-    </main>
+    <!-- ② 拍子・リズム -->
+    <section class="rhythm-section" aria-labelledby="rhythmHeading">
+      <h2 id="rhythmHeading">拍子・リズム</h2>
 
-    <!-- サイトフッター（ナビ + 著作権） -->
-    <footer class="site-footer">
-      <nav class="footer-nav" aria-label="サイト内ナビゲーション">
-        <a href="./index.html" aria-current="page">Home</a>
-        <a href="./about.html">About</a>
-        <a href="./privacy.html">Privacy Policy</a>
-        <a href="./terms.html">Terms</a>
-      </nav>
-      <p class="footer-copy">&copy; 2025 Youhei. All rights reserved.</p>
-    </footer>
-
-    <!-- 広告枠 -->
-    <footer class="ad-area">
-      <div class="ad-slot">
-        <!-- AD_PLACEHOLDER: Google AdSense code will be inserted here -->
-        <!-- ↓ AdSense コードをここに貼り付けてこの行を削除してください -->
-        <span class="ad-placeholder-label">Advertisement</span>
+      <div class="field">
+        <label for="presetSelect">プリセット</label>
+        <select id="presetSelect"></select>
       </div>
-    </footer>
 
-  </div>
+      <div class="field">
+        <span class="field-label" id="meterFieldLabel">拍子</span>
+        <div class="meter-editor" role="group" aria-labelledby="meterFieldLabel">
+          <button class="btn btn-secondary btn-round btn-round-sm btn-hold" id="btnBeatsMinus" aria-label="拍数を減らす">−</button>
+          <span class="beats-value" id="beatsValue" aria-live="polite">4</span>
+          <button class="btn btn-secondary btn-round btn-round-sm btn-hold" id="btnBeatsPlus" aria-label="拍数を増やす">＋</button>
+          <span class="meter-slash">/</span>
+          <select id="unitSelect" aria-label="拍の音符（分母）">
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field field-stack">
+        <label for="groupsInput">グルーピング</label>
+        <input type="text" id="groupsInput" inputmode="numeric" autocomplete="off"
+               placeholder="例: 2+2+3（空欄なら 1 拍目のみ強拍）">
+        <p class="field-hint" id="groupsHint" aria-live="polite"></p>
+      </div>
+
+      <div class="field field-stack">
+        <span class="field-label" id="subdivisionLabel">細分化</span>
+        <div class="segmented" role="radiogroup" aria-labelledby="subdivisionLabel">
+          <label><input type="radio" name="subdivision" value="quarter" checked><span>なし</span></label>
+          <label><input type="radio" name="subdivision" value="eighth"><span>8分</span></label>
+          <label><input type="radio" name="subdivision" value="triplet"><span>3連</span></label>
+          <label><input type="radio" name="subdivision" value="sixteenth"><span>16分</span></label>
+          <label><input type="radio" name="subdivision" value="shuffle"><span>シャッフル</span></label>
+          <label><input type="radio" name="subdivision" value="offbeat"><span>裏拍のみ</span></label>
+        </div>
+      </div>
+
+      <p class="panel-note">BPM は 1 拍（分母の音符）あたりの数です。</p>
+      <button class="btn btn-secondary" id="btnResetAccents" type="button">アクセントを初期化</button>
+    </section>
+
+    <!-- ③ サウンド -->
+    <section class="sound-section" aria-labelledby="soundHeading">
+      <h2 id="soundHeading">サウンド</h2>
+      <div class="field">
+        <label for="soundSelect">音色</label>
+        <select id="soundSelect">
+          <option value="beep">電子音</option>
+          <option value="wood">ウッドブロック</option>
+          <option value="hihat">ハイハット</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="volumeSlider">音量</label>
+        <input type="range" id="volumeSlider" min="0" max="100" value="80">
+      </div>
+      <div class="field">
+        <label for="subVolumeSlider">細分化の音量</label>
+        <input type="range" id="subVolumeSlider" min="0" max="100" value="50">
+      </div>
+    </section>
+
+    <!-- ④ 練習モード -->
+    <section class="practice-section" aria-labelledby="practiceHeading">
+      <h2 id="practiceHeading">練習モード</h2>
+      <div class="practice-item">
+        <div class="practice-head">
+          <label for="trainerEnabled">テンポアップ</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="trainerEnabled" aria-label="テンポアップのON/OFF">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <p class="practice-row">
+          <input type="number" id="trainerEvery" min="1" max="64" value="4" aria-label="何小節ごと"> 小節ごとに
+          <input type="number" id="trainerStep" min="1" max="50" value="2" aria-label="変化量"> BPM ずつ、
+          <input type="number" id="trainerTarget" min="1" max="500" value="160" aria-label="目標 BPM"> BPM まで
+        </p>
+      </div>
+      <div class="practice-item">
+        <div class="practice-head">
+          <label for="gapEnabled">無音小節（体内テンポ練習）</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="gapEnabled" aria-label="無音小節のON/OFF">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <p class="practice-row">
+          <input type="number" id="gapPlay" min="1" max="64" value="3" aria-label="鳴らす小節数"> 小節鳴らして
+          <input type="number" id="gapMute" min="1" max="64" value="1" aria-label="無音にする小節数"> 小節無音
+        </p>
+      </div>
+    </section>
+
+    <!-- ⑤ 設定（最下部） -->
+    <section class="settings-panel" aria-label="設定">
+      <h2>設定</h2>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label for="themeSelect">テーマ</label>
+          <select id="themeSelect" aria-label="テーマの選択">
+            <option value="washi">和紙風</option>
+            <option value="mori">森</option>
+            <option value="aizome">藍染</option>
+            <option value="dark">ダーク</option>
+            <option value="metal">メタル</option>
+            <option value="neon">ネオンサイバー</option>
+          </select>
+        </div>
+        <!-- 画面のスリープ防止（対応ブラウザのみ表示） -->
+        <div class="setting-item" id="wakeLockSetting" hidden>
+          <label for="wakeLockToggle">再生中は画面を消さない</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="wakeLockToggle" checked aria-label="再生中に画面を消さない設定のON/OFF">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <!-- ホーム画面への追加（インストールできるブラウザのみ表示） -->
+        <div class="setting-item" id="installSetting" hidden>
+          <span class="setting-label">アプリ</span>
+          <button class="btn btn-secondary" id="btnInstall" type="button">ホーム画面に追加</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <nav class="footer-nav" aria-label="フッターナビゲーション">
+      <ul>
+        <li><a href="../">yorozu-craft トップ</a></li>
+        <li><a href="./" aria-current="page">ホーム</a></li>
+        <li><a href="./guide.html">使い方</a></li>
+        <li><a href="./guide.html#faq">よくある質問</a></li>
+        <li><a href="./about.html">運営者情報</a></li>
+        <li><a href="./privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </nav>
+
+    <p class="copyright">&copy; 2026 yorozu-craft. All rights reserved.</p>
+
+    <!-- 広告枠（ページ最下部・UIの外） -->
+    <div class="ad-container">
+      <!-- AD_PLACEHOLDER: Google AdSense code will be inserted here -->
+      <div class="ad-placeholder ad-responsive" aria-hidden="true">
+        <p>広告スペース</p>
+      </div>
+    </div>
+  </footer>
 
   <script src="./main.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
