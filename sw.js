@@ -12,7 +12,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'web-metronome-';
-const CACHE_NAME   = `${CACHE_PREFIX}v1`; // キャッシュする中身の構成を変えたら上げる
+const CACHE_NAME   = `${CACHE_PREFIX}v2`; // キャッシュする中身の構成を変えたら上げる
 
 /** 初回インストール時に取得しておくファイル（オフラインで開けるページ一式） */
 const PRECACHE_URLS = [
@@ -27,8 +27,7 @@ const PRECACHE_URLS = [
   './icon-maskable-512.png',
   './apple-touch-icon.png',
   './guide.html',
-  './about.html',
-  './privacy-policy.html',
+  // 運営者情報・プライバシーポリシーは yorozu-craft 共通ページ（../about.html 等）に移したのでキャッシュしない
 ];
 
 /** この時間ネットワークが応答しなければ、キャッシュがあればそちらを返す */
