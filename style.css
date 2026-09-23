@@ -48,6 +48,13 @@ body {
   gap: 32px;
 }
 
+/* トップページの各セクション間の余白 */
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 /* =============================================
    ヘッダー
    ============================================= */
@@ -86,9 +93,15 @@ h1 {
   transition: color var(--transition);
 }
 
-/* 拍ごとのフラッシュアニメーション */
+/* 拍ごとのフラッシュ（強拍 = primary、その他 = accent） */
 .bpm-display.beat-flash {
+  color: var(--accent);
+  transition: none;
+}
+
+.bpm-display.beat-flash-strong {
   color: var(--primary);
+  transition: none;
 }
 
 .bpm-label {
@@ -96,6 +109,116 @@ h1 {
   color: var(--muted);
   letter-spacing: 0.15em;
   margin-top: 4px;
+}
+
+.tempo-name {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--primary);
+  opacity: 0.8;
+  margin-top: 2px;
+  min-height: 1.2em;
+}
+
+/* =============================================
+   拍インジケーター（縦バーの高さ = アクセント段階）
+   ============================================= */
+.beat-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.beat-dots {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 6px;
+  height: 48px;
+}
+
+.beat-dot {
+  flex: 1 1 0;
+  max-width: 36px;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 変則拍子のグループ頭の前にすき間を入れて区切りを見せる */
+.beat-dot.group-start {
+  margin-left: 8px;
+}
+
+.beat-fill {
+  display: block;
+  width: 100%;
+  border-radius: 4px;
+  background: #3a3a3a;
+  transition: background 0.06s linear, box-shadow 0.06s linear;
+}
+
+.beat-dot[data-level="3"] .beat-fill { height: 100%; background: #5a4a70; }
+.beat-dot[data-level="2"] .beat-fill { height: 66%; }
+.beat-dot[data-level="1"] .beat-fill { height: 36%; }
+.beat-dot[data-level="0"] .beat-fill {
+  height: 12%;
+  background: transparent;
+  border: 1px dashed #555;
+}
+
+.beat-dot.active .beat-fill {
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(3, 218, 198, 0.55);
+}
+
+.beat-dot[data-level="3"].active .beat-fill {
+  background: var(--primary);
+  box-shadow: 0 0 12px rgba(187, 134, 252, 0.6);
+}
+
+.beat-dot[data-level="0"].active .beat-fill {
+  background: transparent;
+  border-color: var(--accent);
+  box-shadow: none;
+}
+
+/* 無音小節中は光らせず枠だけで位置を示す */
+.beat-dots.silent .beat-dot.active .beat-fill {
+  background: transparent;
+  box-shadow: none;
+  outline: 1px solid var(--muted);
+}
+
+.beat-dot:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.beat-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.meter-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.beat-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
 }
 
 /* =============================================
@@ -128,6 +251,12 @@ h1 {
 .btn-adjust:active {
   background: #333;
   transform: scale(0.94);
+}
+
+/* 長押しで連続変更するボタン: スクロールやダブルタップズームを抑止 */
+.btn-hold {
+  touch-action: none;
+  -webkit-touch-callout: none;
 }
 
 /* レンジスライダー */
@@ -219,6 +348,11 @@ input[type="number"]::-webkit-outer-spin-button {
   transform: scale(0.96);
 }
 
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
 /* 再生 / 停止ボタン */
 .playback-section {
   display: flex;
@@ -250,6 +384,7 @@ input[type="number"]::-webkit-outer-spin-button {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  margin-top: -8px;
 }
 
 .btn-tap {
@@ -271,6 +406,271 @@ input[type="number"]::-webkit-outer-spin-button {
 .tap-hint {
   font-size: 0.78rem;
   color: var(--muted);
+}
+
+/* =============================================
+   設定パネル（折りたたみ）
+   ============================================= */
+.panel {
+  background: var(--surface);
+  border: 1px solid #2a2a2a;
+  border-radius: var(--radius);
+}
+
+.panel summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.panel summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg);
+  transition: transform var(--transition);
+}
+
+.panel[open] summary::after {
+  transform: rotate(-135deg);
+}
+
+.panel summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+  border-radius: var(--radius);
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 16px 18px;
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.field-stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.field > label,
+.field-label {
+  font-size: 0.82rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.field input[type="range"] {
+  max-width: 220px;
+}
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--danger);
+  min-height: 1em;
+  margin-top: -2px;
+}
+
+.field-hint:empty {
+  display: none;
+}
+
+select,
+input[type="text"] {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+select:focus,
+input[type="text"]:focus {
+  border-color: var(--primary);
+}
+
+input[type="text"].invalid {
+  border-color: var(--danger);
+}
+
+#presetSelect {
+  min-width: 0;
+  flex: 0 1 200px;
+}
+
+/* 拍子エディタ: [−] 7 [＋] / [8] */
+.meter-editor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-step {
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid #333;
+  color: var(--text);
+}
+
+.beats-value {
+  min-width: 2ch;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.meter-slash {
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+
+/* 細分化の選択チップ */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.segmented label {
+  position: relative;
+}
+
+.segmented input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.segmented span {
+  display: block;
+  padding: 9px 4px;
+  text-align: center;
+  font-size: 0.85rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.segmented input:checked + span {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #000;
+  font-weight: 600;
+}
+
+.segmented input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.panel-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.btn-small {
+  align-self: flex-start;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+/* 練習モード */
+.practice {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
+.practice-row {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 2.4;
+}
+
+.practice-row input[type="number"],
+.panel input[type="number"] {
+  width: 60px;
+  padding: 4px 6px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+/* キーボードショートカット案内（タッチ端末では非表示） */
+.shortcut-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 2;
+}
+
+.shortcut-hint kbd {
+  display: inline-block;
+  padding: 0 6px;
+  margin: 0 1px;
+  border: 1px solid #444;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.7rem;
+  color: var(--text);
+}
+
+@media (hover: none) {
+  .shortcut-hint {
+    display: none;
+  }
 }
 
 /* =============================================

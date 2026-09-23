@@ -21,11 +21,21 @@
       <section class="bpm-section">
         <div class="bpm-display" id="bpmDisplay" aria-live="polite">120</div>
         <div class="bpm-label">BPM</div>
+        <div class="tempo-name" id="tempoName">Allegro</div>
+      </section>
+
+      <!-- 拍インジケーター（タップでアクセント切替） -->
+      <section class="beat-section" aria-label="拍とアクセント">
+        <div class="beat-dots" id="beatDots"></div>
+        <p class="beat-meta">
+          <span class="meter-label" id="meterLabel">4/4</span>
+          <span class="beat-hint">拍をタップでアクセント切替（強→中→弱→休）</span>
+        </p>
       </section>
 
       <!-- BPM コントロール -->
       <section class="bpm-controls">
-        <button class="btn btn-adjust" id="btnMinus" aria-label="BPM を下げる">−</button>
+        <button class="btn btn-adjust btn-hold" id="btnMinus" aria-label="BPM を下げる">−</button>
         <input
           type="range"
           id="bpmSlider"
@@ -34,7 +44,7 @@
           value="120"
           aria-label="BPM スライダー"
         />
-        <button class="btn btn-adjust" id="btnPlus" aria-label="BPM を上げる">＋</button>
+        <button class="btn btn-adjust btn-hold" id="btnPlus" aria-label="BPM を上げる">＋</button>
       </section>
 
       <!-- BPM 直接入力 -->
@@ -61,6 +71,111 @@
         </button>
         <p class="tap-hint">連続タップで BPM を計測</p>
       </section>
+
+      <!-- 拍子・リズム -->
+      <details class="panel" open>
+        <summary>拍子・リズム</summary>
+        <div class="panel-body">
+
+          <div class="field">
+            <label for="presetSelect">プリセット</label>
+            <select id="presetSelect"></select>
+          </div>
+
+          <div class="field">
+            <span class="field-label" id="meterFieldLabel">拍子</span>
+            <div class="meter-editor" role="group" aria-labelledby="meterFieldLabel">
+              <button class="btn btn-step btn-hold" id="btnBeatsMinus" aria-label="拍数を減らす">−</button>
+              <span class="beats-value" id="beatsValue" aria-live="polite">4</span>
+              <button class="btn btn-step btn-hold" id="btnBeatsPlus" aria-label="拍数を増やす">＋</button>
+              <span class="meter-slash">/</span>
+              <select id="unitSelect" aria-label="拍の音符（分母）">
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="8">8</option>
+                <option value="16">16</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field field-stack">
+            <label for="groupsInput">グルーピング</label>
+            <input type="text" id="groupsInput" inputmode="numeric" autocomplete="off"
+                   placeholder="例: 2+2+3（空欄なら 1 拍目のみ強拍）" />
+            <p class="field-hint" id="groupsHint" aria-live="polite"></p>
+          </div>
+
+          <div class="field field-stack">
+            <span class="field-label" id="subdivisionLabel">細分化</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="subdivisionLabel">
+              <label><input type="radio" name="subdivision" value="quarter" checked /><span>なし</span></label>
+              <label><input type="radio" name="subdivision" value="eighth" /><span>8分</span></label>
+              <label><input type="radio" name="subdivision" value="triplet" /><span>3連</span></label>
+              <label><input type="radio" name="subdivision" value="sixteenth" /><span>16分</span></label>
+              <label><input type="radio" name="subdivision" value="shuffle" /><span>シャッフル</span></label>
+              <label><input type="radio" name="subdivision" value="offbeat" /><span>裏拍のみ</span></label>
+            </div>
+          </div>
+
+          <p class="panel-note">BPM は 1 拍（分母の音符）あたりの数です。</p>
+          <button class="btn btn-small" id="btnResetAccents" type="button">アクセントを初期化</button>
+        </div>
+      </details>
+
+      <!-- サウンド -->
+      <details class="panel">
+        <summary>サウンド</summary>
+        <div class="panel-body">
+          <div class="field">
+            <label for="soundSelect">音色</label>
+            <select id="soundSelect">
+              <option value="beep">電子音</option>
+              <option value="wood">ウッドブロック</option>
+              <option value="hihat">ハイハット</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="volumeSlider">音量</label>
+            <input type="range" id="volumeSlider" min="0" max="100" value="80" />
+          </div>
+          <div class="field">
+            <label for="subVolumeSlider">細分化の音量</label>
+            <input type="range" id="subVolumeSlider" min="0" max="100" value="50" />
+          </div>
+        </div>
+      </details>
+
+      <!-- 練習モード -->
+      <details class="panel">
+        <summary>練習モード</summary>
+        <div class="panel-body">
+          <div class="practice">
+            <label class="toggle">
+              <input type="checkbox" id="trainerEnabled" />
+              <span>テンポアップ</span>
+            </label>
+            <p class="practice-row">
+              <input type="number" id="trainerEvery" min="1" max="64" value="4" aria-label="何小節ごと" /> 小節ごとに
+              <input type="number" id="trainerStep" min="1" max="50" value="2" aria-label="変化量" /> BPM ずつ、
+              <input type="number" id="trainerTarget" min="1" max="500" value="160" aria-label="目標 BPM" /> BPM まで
+            </p>
+          </div>
+          <div class="practice">
+            <label class="toggle">
+              <input type="checkbox" id="gapEnabled" />
+              <span>無音小節（体内テンポ練習）</span>
+            </label>
+            <p class="practice-row">
+              <input type="number" id="gapPlay" min="1" max="64" value="3" aria-label="鳴らす小節数" /> 小節鳴らして
+              <input type="number" id="gapMute" min="1" max="64" value="1" aria-label="無音にする小節数" /> 小節無音
+            </p>
+          </div>
+        </div>
+      </details>
+
+      <p class="shortcut-hint">
+        <kbd>Space</kbd> 再生/停止　<kbd>↑</kbd><kbd>↓</kbd> BPM ±1（<kbd>Shift</kbd> で ±10）　<kbd>T</kbd> タップ
+      </p>
 
     </main>
 
