@@ -110,7 +110,7 @@ GitHub Pages の仕組みにより、Pages を有効にしたリポジトリは�
 
 ## AdSense 審査対策チェックリスト
 
-- [x] プライバシーポリシー・運営者情報・免責事項（yorozu-craft 共通ページ `../privacy-policy.html#web-metronome` / `../about.html#web-metronome`）
+- [x] プライバシーポリシー・運営者情報・免責事項（yorozu-craft 共通ページ `../privacy-policy.html` / `../about.html`）
 - [ ] お問い合わせ窓口（現在は未設置。審査で求められたら追加）
 - [x] 全ページ共通のナビゲーション
 - [x] 十分なテキストコンテンツ（使い方ガイド + FAQ）
