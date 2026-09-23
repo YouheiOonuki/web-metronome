@@ -42,7 +42,7 @@ API を一切使用せず、HTML / CSS / JavaScript の静的サイトとして�
 ### SEO・AdSense対応
 - **SEO最適化**: meta description、Open Graph（共有用画像つき）、Twitter Card、JSON-LD構造化データ（WebApplication + FAQPage）
 - **AdSense審査対応**: 使い方ガイド・FAQ、運営者情報・免責事項、プライバシーポリシー、全ページ共通のナビゲーション、sitemap.xml
-- **広告枠**: メトロノームの操作を邪魔しないよう、各ページの最下部に1か所
+- **広告**: 全ページの `<head>` の AdSense タグによる自動広告。空の広告枠は置かない
 - **アクセス解析**: Cloudflare Web Analytics（Cookie 不使用）を全ページに設置
 
 ## ファイル構成
@@ -98,15 +98,15 @@ GitHub Pages の仕組みにより、Pages を有効にしたリポジトリは�
 1. **Settings** → **Pages** を開く
 2. **Source** を `Deploy from a branch`、**Branch** を `main` / `/ (root)` にして **Save**
 
-## 広告枠について
+## 広告について
 
-`index.html` と `guide.html` の最下部（フッターの下）に広告プレースホルダーが1か所ずつあります。
+広告は、全ページの `<head>` に入れた AdSense タグ（`google-adsense-account` のメタタグと `adsbygoogle.js`）による**自動広告**で表示されます。Google が自動で位置を決めるので、空の広告枠は置いていません。
+
+広告の位置を自分で指定したくなった場合は、`index.html` と `guide.html` のフッター内にある次のコメントの位置に、AdSense で作った広告ユニットのコードを入れてください。
 
 ```html
-<!-- AD_PLACEHOLDER: Google AdSense code will be inserted here -->
+<!-- AD_PLACEHOLDER: 広告の位置を指定する場合はここに AdSense の広告ユニットを入れる（今は全ページの <head> のタグによる自動広告） -->
 ```
-
-このコメントの直後にある `.ad-placeholder` の `<div>` を AdSense のコードに差し替えてください。
 
 ## AdSense 審査対策チェックリスト
 
