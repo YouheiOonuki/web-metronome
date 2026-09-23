@@ -971,32 +971,6 @@ select {
 }
 
 /* ===========================
-   広告枠（ページ最下部のみ）
-   =========================== */
-.ad-container {
-  max-width: 700px;
-  margin: 1rem auto 0;
-}
-
-.ad-placeholder {
-  background-color: var(--bg-secondary);
-  border: 1px dashed var(--border);
-  border-radius: 4px;
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* レスポンシブ広告枠 */
-.ad-responsive {
-  min-height: 90px;
-  padding: 1rem;
-}
-
-/* ===========================
    フッター
    =========================== */
 .app-footer {
