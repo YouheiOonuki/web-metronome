@@ -1036,3 +1036,8 @@ select {
 }
 .info-list dt { font-weight: 600; color: var(--text-primary); }
 .info-list dd { margin: 0; color: var(--text-secondary); }
+
+/* 使い方ページの折りたたみ（WRITING.md の基準で、補足・一覧はここに入れる） */
+.content-section details { margin: 0.3rem 0 0.6rem; }
+.content-section summary { cursor: pointer; color: var(--accent); font-size: 0.85rem; }
+.content-section details[open] summary { margin-bottom: 0.3rem; }
