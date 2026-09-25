@@ -28,9 +28,7 @@
   <style>
     .keymap { border-collapse: collapse; margin: 8px 0 12px; font-size: 14px; }
     .keymap th, .keymap td { border: 1px solid var(--border-color, #ccc); padding: 4px 8px; text-align: left; }
-    .open-piano { display: inline-block; margin: 4px 0 8px; padding: 12px 24px; border-radius: 8px; background: #8b4513; color: #fff; font-weight: 600; text-decoration: none; }
-    #faq dt { font-weight: 700; margin-top: 10px; }
-    #faq dd { margin: 4px 0 0 0; }
+    .content-section a.open-piano, a.open-piano { display: inline-block; margin: 4px 0 8px; padding: 12px 24px; border-radius: 8px; background: var(--btn-primary-bg); color: var(--btn-primary-text); font-weight: 600; text-decoration: none; }
     @media print { ins.adsbygoogle, .google-auto-placed, iframe[id^="aswift"], iframe[id^="google_ads"] { display: none !important; } }
   </style>
 </head>
@@ -85,7 +83,7 @@
 
     <article id="faq" class="content-section">
       <h2>よくある質問</h2>
-      <dl>
+      <dl class="faq-list">
         <dt>ピアノの音が出ないときは？</dt>
         <dd>最初に鍵盤を押したときに音の準備をします。端末の音量と消音の設定を確かめ、もう一度押してください。</dd>
 
