@@ -6,6 +6,7 @@
  * - パソコンのキーは KeyboardEvent.code で割り当てる（配列・入力モードに左右されない）。画面のキーの文字は
  *   navigator.keyboard.getLayoutMap()（対応ブラウザ）か、実際に押された文字から合わせる
  * - 最初の操作の中で AudioContext を作り、resume する（それより前は音を出せない）
+ * - MIDI キーボード（Web MIDI）は「MIDI キーボードをつなぐ」を押したときだけ許可を求める（sysex なし・受けるだけで送らない）
  */
 (function () {
   'use strict';
@@ -26,12 +27,14 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         names: settings.names, volume: settings.volume, start: settings.start, layout: settings.layout, bpm: settings.bpm,
+        timbre: settings.timbre,
       }));
     } catch (e) { /* 保存できなくても弾ける */ }
   };
   if (!settings.layout) settings.layout = /^ja\b/i.test(navigator.language || '') ? 'jis' : 'us';
   const learned = {}; // code → 実際のキーの文字
   synth.setVolume(settings.volume / 100);
+  synth.setTimbre(settings.timbre);
 
   // ---- 鍵盤の描画 ----
   let whites = 15;
@@ -109,7 +112,7 @@
 
   // ---- 押している鍵（指・キー・マウスのどれで押しているか） ----
   const held = new Map(); // midi → Set(源)
-  function press(midi, src) {
+  function press(midi, src, velocity = 0.8) {
     if (midi == null || midi < Core.LOWEST || midi > Core.HIGHEST) return;
     let s = held.get(midi);
     if (!s) {
@@ -117,7 +120,7 @@
       held.set(midi, s);
     }
     if (s.size === 0) {
-      synth.noteOn(midi, 0.8);
+      synth.noteOn(midi, velocity);
       const el = keyEls.get(midi);
       if (el) el.classList.add('down');
     }
@@ -133,8 +136,9 @@
       if (el) el.classList.remove('down');
     }
   }
+  /** 指・キーで押している鍵を全部離す（ウィンドウを離れたとき）。MIDI の鍵は MIDI のノートオフで離れるので残す */
   function releaseAll() {
-    for (const [midi, s] of [...held]) for (const src of [...s]) release(midi, src);
+    for (const [midi, s] of [...held]) for (const src of [...s]) if (src[0] !== 'm') release(midi, src);
     pointers.clear();
     codeNotes.clear();
   }
@@ -175,7 +179,7 @@
   stage.addEventListener('contextmenu', (e) => e.preventDefault());
   // 画面のボタンを押したあとにフォーカスを外す（Space をサステインに使うので、ボタンが Space で押されないように）
   $('bar').addEventListener('click', (e) => {
-    const b = e.target.closest('button');
+    const b = e.target.closest('button, summary');
     if (b && e.detail > 0) b.blur();
   });
 
@@ -290,8 +294,9 @@
   });
 
   let sustainToggle = false;
+  const midiPedals = new Set(); // ダンパーペダルを踏んでいる MIDI の入力とチャンネル
   function applySustain() {
-    const on = sustainToggle || spaceSustain;
+    const on = sustainToggle || spaceSustain || midiPedals.size > 0;
     synth.setSustain(on);
     $('sustainBtn').setAttribute('aria-pressed', String(on));
   }
@@ -305,6 +310,7 @@
   vol.addEventListener('input', () => {
     settings.volume = Number(vol.value);
     synth.setVolume(settings.volume / 100);
+  synth.setTimbre(settings.timbre);
     save();
   });
 
@@ -342,6 +348,146 @@
     save();
   });
 
+  // ---- 音色・MIDI（バーの「音色」を開いた中） ----
+  const more = $('more');
+  const morePanel = $('morePanel');
+  function placePanel() {
+    morePanel.style.top = Math.round($('bar').getBoundingClientRect().bottom + 4) + 'px';
+  }
+  more.addEventListener('toggle', () => {
+    if (more.open) placePanel();
+  });
+  // 鍵盤を弾き始めたら閉じる。Esc でも閉じる
+  stage.addEventListener('pointerdown', () => {
+    more.open = false;
+  }, true);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && more.open) more.open = false;
+  });
+
+  const timbreList = $('timbreList');
+  for (const t of Core.TIMBRES) {
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'timbre';
+    input.value = t.id;
+    input.checked = t.id === settings.timbre;
+    const span = document.createElement('span');
+    span.textContent = t.name;
+    label.append(input, span);
+    timbreList.appendChild(label);
+    input.addEventListener('change', () => {
+      settings.timbre = t.id;
+      synth.setTimbre(t.id);
+      save();
+      showTimbre();
+      // 選んだ音色を 1 音だけ鳴らして聞かせる（ラジオを押したのは操作なので音を出せる）
+      if (synth.unlock()) {
+        synth.noteOn(60, 0.6);
+        setTimeout(() => {
+          if (!held.has(60)) synth.noteOff(60);
+        }, 350);
+      }
+    });
+  }
+  function showTimbre() {
+    const t = Core.TIMBRES.find((x) => x.id === settings.timbre);
+    $('timbreName').textContent = t ? t.name : '';
+  }
+  showTimbre();
+
+  // MIDI キーボード（Web MIDI API）。Safari（iPhone・iPad・Mac）は対応していない（MDN の対応表）
+  const midiBtn = $('midiBtn');
+  const midiStatus = $('midiStatus');
+  let midiAccess = null;
+  const midiInputs = new Map(); // id → MIDIInput
+  function setStatus(text, names) {
+    midiStatus.replaceChildren();
+    midiStatus.append(text);
+    if (names && names.length) {
+      const b = document.createElement('strong');
+      b.textContent = names.join('、'); // 機器の名前は機器が名乗ったもの。文字として出すだけ
+      midiStatus.append(b);
+    }
+  }
+  if (!navigator.requestMIDIAccess) {
+    midiBtn.hidden = true;
+    setStatus('このブラウザは MIDI キーボードに対応していません（Safari・iPhone・iPad は非対応）。パソコンの Chrome・Edge、Android の Chrome で使えます。');
+  }
+
+  /** 1 つの MIDI メッセージを弾く。src はどの入力のどのチャンネルか（同じ音を別の入力・指と同時に押しても正しく離すため） */
+  function handleMidi(data, inputId) {
+    const m = Core.parseMidiMessage(data);
+    if (!m) return;
+    const src = 'm' + inputId + '/' + m.channel;
+    if (m.type === 'on') {
+      markPlaying();
+      press(m.note, src, Core.velocityLevel(m.velocity));
+    } else if (m.type === 'off') {
+      release(m.note, src);
+    } else if (m.type === 'sustain') {
+      if (m.on) midiPedals.add(src);
+      else midiPedals.delete(src);
+      applySustain();
+    } else if (m.type === 'allOff') {
+      releaseSource((x) => x === src);
+      midiPedals.delete(src);
+      applySustain();
+    }
+  }
+  function releaseSource(match) {
+    for (const [midi, s] of [...held]) for (const x of [...s]) if (match(x)) release(midi, x);
+  }
+  // 最初の音で開いていた「音色」を閉じる（鍵盤が隠れないように）
+  function markPlaying() {
+    if (more.open) more.open = false;
+  }
+
+  function refreshInputs() {
+    const now = new Map();
+    midiAccess.inputs.forEach((input) => {
+      if (input.state === 'connected') now.set(input.id, input);
+    });
+    for (const [id, input] of midiInputs) {
+      if (now.has(id)) continue;
+      input.onmidimessage = null;
+      // 抜かれた機器で押していた鍵・ペダルを離す
+      releaseSource((x) => x.startsWith('m' + id + '/'));
+      for (const p of [...midiPedals]) if (p.startsWith('m' + id + '/')) midiPedals.delete(p);
+      applySustain();
+      midiInputs.delete(id);
+    }
+    for (const [id, input] of now) {
+      if (midiInputs.has(id)) continue;
+      input.onmidimessage = (e) => handleMidi(e.data, id);
+      midiInputs.set(id, input);
+    }
+    const names = [...midiInputs.values()].map((i) => i.name || 'MIDI 機器');
+    if (names.length) setStatus('つながっています: ', names);
+    else setStatus('MIDI キーボードが見つかりません。つなぐと自動で名前が出ます（USB は差し直し、Bluetooth は端末の設定で接続）。');
+    $('midiMark').textContent = names.length ? '・MIDI' : '';
+  }
+
+  midiBtn.addEventListener('click', () => {
+    if (!navigator.requestMIDIAccess) return;
+    synth.unlock(); // MIDI の音はボタンの操作のあとに鳴るので、ここで音の準備をしておく
+    midiBtn.disabled = true;
+    setStatus('ブラウザの確認が出たら「許可」を押してください。');
+    navigator.requestMIDIAccess({ sysex: false }).then((access) => {
+      midiAccess = access;
+      midiBtn.hidden = true;
+      access.onstatechange = refreshInputs;
+      refreshInputs();
+    }).catch((err) => {
+      midiBtn.disabled = false;
+      const denied = err && (err.name === 'NotAllowedError' || err.name === 'SecurityError');
+      setStatus(denied
+        ? 'MIDI の利用が許可されませんでした。アドレスバーの横のサイトの設定で MIDI を許可してから、もう一度押してください。'
+        : 'MIDI キーボードにつなげませんでした。もう一度押してください。');
+    });
+  });
+
   // ---- 大きさの変化 ----
   let resizeTimer = null;
   window.addEventListener('resize', () => {
@@ -360,5 +506,5 @@
   }
 
   // テスト用（Playwright から中を見る）
-  window.__piano = { synth, held, settings, render };
+  window.__piano = { synth, held, settings, render, handleMidi, midiPedals };
 })();

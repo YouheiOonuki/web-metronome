@@ -1,5 +1,5 @@
 'use strict';
-// ブラウザピアノ（piano/）のテスト: 音の高さ・キーの割り当て・鍵盤の範囲・設定の正規化・ページの決まり
+// ブラウザピアノ（piano/）のテスト: 音の高さ・キーの割り当て・鍵盤の範囲・音色・MIDI の読み方・設定の正規化・ページの決まり
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -127,6 +127,107 @@ test('音色の設計: 倍音はナイキストより下、低い音ほど長く
   }
 });
 
+test('音色: 6 種の設計がどの音域でも正しい範囲（倍音・音量の形・1 音の大きさ）', () => {
+  const ids = Core.TIMBRES.map((t) => t.id);
+  assert.deepEqual(ids, ['piano', 'epiano', 'organ', 'musicbox', 'synth', 'strings']);
+  assert.equal(new Set(Core.TIMBRES.map((t) => t.name)).size, 6);
+  const pianoPeak = Core.voiceDesign(60, 'piano').level * Core.voiceDesign(60, 'piano').detune.length; // 0.32 × 2
+  for (const id of ids) {
+    for (let m = 21; m <= 108; m++) {
+      const d = Core.voiceDesign(m, id);
+      const at = `${id} ${m}`;
+      close(d.f, Core.frequency(m), 1e-9);
+      assert.equal(d.partials[0], 0, at);
+      assert.ok(d.partials[1] > 0, at);
+      assert.ok(d.partials.every((x) => x >= 0 && Number.isFinite(x)), at);
+      assert.ok((d.partials.length - 1) * d.f <= 11000 || d.partials.length === 2, `${at}: ${d.partials.length - 1} 倍音`);
+      assert.ok(d.detune.length >= 1 && d.detune.length <= 2, at); // 発振器は 1 音に 2 つまで（CPU）
+      assert.ok(d.attack > 0 && d.attack <= 0.2, at);
+      assert.ok(d.t2 >= d.attack, at);
+      assert.ok(d.mid > 0 && d.mid <= 1, at);
+      assert.ok(d.sustain >= 0 && d.sustain <= d.mid, at);
+      assert.ok(d.tau1 > 0 && d.tau2 > 0 && d.release > 0 && d.release <= 0.5, at);
+      assert.ok(d.cutoffStart >= d.cutoffEnd && d.cutoffEnd > d.f, at);
+      assert.ok(d.cutoffStart <= 16000, at);
+      assert.ok(d.noise >= 0 && d.noise <= 0.06, at);
+      // 1 音の最大はピアノ（今までの音）を超えない（和音で割れないように。実際の出力は書き出して確かめた）
+      assert.ok(d.level * d.detune.length <= pianoPeak + 1e-9, `${at}: ${d.level * d.detune.length}`);
+      // 自然に消える音色は減衰の時定数を持つ。押している間鳴る音色は離すと消える
+      if (d.sustain === 0) assert.ok(Number.isFinite(d.tau2) && d.tau2 <= 6, at);
+    }
+  }
+  assert.deepEqual(Core.voiceDesign(60, 'x'), Core.voiceDesign(60, 'piano')); // 知らない値はピアノ
+  assert.deepEqual(Core.voiceDesign(60), Core.voiceDesign(60, 'piano'));
+  // 押している間鳴り続けるのはオルガン・シンセ・ストリングス風
+  assert.deepEqual(ids.filter((id) => Core.voiceDesign(60, id).sustain > 0), ['organ', 'synth', 'strings']);
+  // ストリングス風はゆっくり立ち上がる、オルゴールは離しても少し残る
+  assert.ok(Core.voiceDesign(60, 'strings').attack >= 0.1);
+  assert.ok(Core.voiceDesign(60, 'musicbox').release > Core.voiceDesign(60, 'piano').release);
+});
+
+test('音色: ピアノは今までと同じ数字（C4・A0・C8）', () => {
+  const c4 = Core.voiceDesign(60, 'piano');
+  assert.equal(c4.partials.length, 11);
+  close(c4.partials[1], 0.41719, 1e-5);
+  close(c4.partials[7], 0.012869, 1e-5);
+  close(c4.decay, 2.40003, 1e-4);
+  close(c4.cutoffStart, 5162.758, 1e-3);
+  close(c4.cutoffEnd, 1184.877, 1e-3);
+  assert.deepEqual([c4.level, c4.mid, c4.t2, c4.release, c4.noise, c4.attack], [0.32, 0.4, 0.3, 0.08, 0.06, 0.004]);
+  assert.deepEqual(c4.detune, [-1.5, 1.5]);
+  assert.equal(Core.voiceDesign(21, 'piano').decay, 6);
+  assert.equal(Core.voiceDesign(108, 'piano').partials.length, 3); // 4186Hz × 2 = 8372Hz ≤ 10,000Hz
+});
+
+test('MIDI: ベロシティ → 音の大きさ（127 で画面の鍵盤と同じ 0.8、弱いほど小さい）', () => {
+  assert.equal(Core.velocityLevel(127), 0.8);
+  assert.ok(Core.velocityLevel(1) > 0 && Core.velocityLevel(1) < 0.1);
+  let prev = 0;
+  for (let v = 1; v <= 127; v++) {
+    const x = Core.velocityLevel(v);
+    assert.ok(x > prev && x <= 0.8, String(v));
+    prev = x;
+  }
+  assert.equal(Core.velocityLevel(200), 0.8);
+  assert.equal(Core.velocityLevel('abc'), Core.velocityLevel(0));
+});
+
+test('MIDI: メッセージの読み方（ノートオン・オフ、ベロシティ 0、CC64、チャンネル）', () => {
+  const P = Core.parseMidiMessage;
+  assert.deepEqual(P([0x90, 60, 100]), { type: 'on', note: 60, velocity: 100, channel: 1 });
+  assert.deepEqual(P(new Uint8Array([0x9f, 21, 1])), { type: 'on', note: 21, velocity: 1, channel: 16 });
+  // ノートオンでベロシティ 0 はノートオフ（多くのキーボードはこちらで離鍵を送る）
+  assert.deepEqual(P([0x90, 60, 0]), { type: 'off', note: 60, channel: 1 });
+  assert.deepEqual(P([0x80, 60, 64]), { type: 'off', note: 60, channel: 1 });
+  assert.deepEqual(P([0x8a, 108, 0]), { type: 'off', note: 108, channel: 11 });
+  // ダンパーペダル（CC64）: 64 以上でオン
+  assert.deepEqual(P([0xb0, 64, 127]), { type: 'sustain', on: true, channel: 1 });
+  assert.deepEqual(P([0xb0, 64, 64]), { type: 'sustain', on: true, channel: 1 });
+  assert.deepEqual(P([0xb3, 64, 63]), { type: 'sustain', on: false, channel: 4 });
+  assert.deepEqual(P([0xb0, 64, 0]), { type: 'sustain', on: false, channel: 1 });
+  assert.deepEqual(P([0xb0, 123, 0]), { type: 'allOff', channel: 1 });
+  assert.deepEqual(P([0xb9, 120, 0]), { type: 'allOff', channel: 10 });
+  // 使わないもの: ほかの CC（モジュレーション）、ピッチベンド、プログラムチェンジ、アフタータッチ
+  assert.equal(P([0xb0, 1, 64]), null);
+  assert.equal(P([0xe0, 0, 64]), null);
+  assert.equal(P([0xc0, 5]), null);
+  assert.equal(P([0xd0, 40]), null);
+  assert.equal(P([0xa0, 60, 40]), null);
+  // システムメッセージ（クロック・アクティブセンシング・sysex）は無視
+  assert.equal(P([0xf8]), null);
+  assert.equal(P([0xfe]), null);
+  assert.equal(P([0xf0, 0x7e, 0x7f, 0xf7]), null);
+  // 壊れたもの
+  assert.equal(P([]), null);
+  assert.equal(P(null), null);
+  assert.equal(P([0x90, 60]), null);
+  assert.equal(P([0x90, 128, 10]), null);
+  assert.equal(P([0x90, 60, 200]), null);
+  assert.equal(P([0x3c, 100]), null); // データのバイトから始まる
+  // 16 チャンネルすべてを受ける（チャンネルは 1〜16 で返す）
+  for (let ch = 0; ch < 16; ch++) assert.equal(P([0x90 | ch, 60, 80]).channel, ch + 1);
+});
+
 test('設定の正規化（保存されていた値をそのまま信じない）', () => {
   assert.deepEqual(Core.normalizeSettings(null), Core.DEFAULTS);
   assert.deepEqual(Core.normalizeSettings('x'), Core.DEFAULTS);
@@ -142,6 +243,9 @@ test('設定の正規化（保存されていた値をそのまま信じない�
   assert.equal(t.start, 24);
   assert.equal(t.layout, '');
   assert.equal(t.bpm, 240);
+  assert.equal(t.timbre, 'piano');
+  assert.equal(Core.normalizeSettings({ timbre: 'organ' }).timbre, 'organ');
+  assert.equal(Core.normalizeSettings({ timbre: '__proto__' }).timbre, 'piano');
 });
 
 test('ページの決まり: 弾く画面は AdSense の meta だけ、使い方ページは広告あり、共通ページへのリンク', () => {
@@ -168,6 +272,24 @@ test('オフライン: sw.js がピアノのファイルを持ち、ファイル
   const sitemap = read('sitemap.xml');
   assert.ok(sitemap.includes('https://yorozu-craft.com/web-metronome/piano/</loc>'));
   assert.ok(sitemap.includes('https://yorozu-craft.com/web-metronome/piano/guide.html</loc>'));
+});
+
+test('MIDI: 許可はボタンを押したときだけ求め、sysex は使わず、何も送らない', () => {
+  const js = read('piano/piano.js');
+  const calls = [...js.matchAll(/navigator\.requestMIDIAccess\(/g)];
+  assert.equal(calls.length, 1);
+  assert.ok(calls[0].index > js.indexOf("midiBtn.addEventListener('click'"), 'ボタンを押したときの中で呼ぶ');
+  assert.ok(js.includes('requestMIDIAccess({ sysex: false })'));
+  assert.ok(!/sysex:\s*true/.test(js));
+  for (const f of ['piano/piano.js', 'piano/synth.js', 'piano/piano-core.js']) {
+    const src = read(f);
+    assert.ok(!/\bfetch\(|XMLHttpRequest|sendBeacon|WebSocket|\.send\(/.test(src), f + ' は外部に送らない');
+  }
+  // 対応していないブラウザの案内と、ボタン・状態の欄がある
+  assert.ok(js.includes('Safari・iPhone・iPad は非対応'));
+  const html = read('piano/index.html');
+  assert.ok(html.includes('id="midiBtn"') && html.includes('MIDI キーボードをつなぐ'));
+  assert.ok(/<details class="more"[\s\S]*id="timbreList"[\s\S]*id="midiStatus"[\s\S]*<\/details>/.test(html));
 });
 
 test('保存のキーは web-metronome_ で始まる', () => {
