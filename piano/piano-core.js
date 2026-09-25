@@ -112,7 +112,7 @@
   }
 
   /**
-   * 画面に出す鍵盤の範囲。start は左はしの白鍵（ドにそろえる）、whites は白鍵の数。
+   * 画面に出す鍵盤の範囲。start は左はしの白鍵（どの白鍵からでもよい。黒鍵なら左どなりの白鍵から）、whites は白鍵の数。
    * 返り値: [{ midi, black, whiteIndex }]（黒鍵の whiteIndex は左どなりの白鍵の番号）
    */
   function keyboardRange(start, whites) {
@@ -136,13 +136,59 @@
   const LOWEST = 21;
   const HIGHEST = 108;
 
-  /** 左はしのド（start）を範囲に収める。whites 本の白鍵が HIGHEST を超えない、C1 より下にしない */
-  function clampStart(start, whites) {
-    const lastWhiteMidi = (s) => keyboardRange(s, whites).filter((k) => !k.black).pop().midi;
-    let s = Math.round(start / 12) * 12;
-    if (s < 24) s = 24; // C1
-    while (s > 24 && lastWhiteMidi(s) > HIGHEST) s -= 12;
+  /** 隣の白鍵（dir = 1 で右、-1 で左）。白鍵の隣は半音か全音 */
+  function nextWhite(midi, dir) {
+    const m = midi + dir;
+    return isBlack(m) ? m + dir : m;
+  }
+
+  /** whites 本の白鍵を出したとき、右はしが C8 になる左はしの白鍵（左はしの上限） */
+  function maxStart(whites) {
+    let s = HIGHEST;
+    for (let i = 1; i < whites; i++) s = nextWhite(s, -1);
     return s;
+  }
+
+  /**
+   * 左はしの白鍵（start）を範囲に収める。黒鍵なら左どなりの白鍵にする。A0 より下にしない、右はしが C8 を超えない。
+   * whites を省くと下限・上限を A0〜C8 だけで見る（保存した値を読むとき）
+   */
+  function clampStart(start, whites) {
+    let s = Math.round(Number(start));
+    if (!Number.isFinite(s)) s = DEFAULTS.start;
+    if (isBlack(s)) s -= 1;
+    const max = whites ? maxStart(whites) : HIGHEST;
+    return Math.max(LOWEST, Math.min(max, s));
+  }
+
+  /**
+   * 音域を動かす。unit は 'white'（白鍵 1 つ）か 'octave'（12 半音 = 白鍵 7 つ）、dir は 1（高く）か -1（低く）。
+   * 端に着いたらそこで止まる（オクターブで動かして A0・右はし C8 を越えるときは端まで）
+   */
+  function shiftStart(start, whites, dir, unit) {
+    const s = clampStart(start, whites);
+    const next = unit === 'octave' ? s + dir * 12 : nextWhite(s, dir);
+    return clampStart(next, whites);
+  }
+
+  /** 右はしの白鍵 */
+  function lastWhite(start, whites) {
+    return keyboardRange(start, whites).filter((k) => !k.black).pop().midi;
+  }
+
+  /** 音域の表示（例「F3〜F5」） */
+  function rangeLabel(start, whites) {
+    return noteName(start, 'cde') + '〜' + noteName(lastWhite(start, whites), 'cde');
+  }
+
+  /**
+   * パソコンのキーの基準（Z キーの音）= 左はしの白鍵を含むオクターブのド。
+   * 左はしを白鍵 1 つずつ動かしても、同じオクターブの中ならキーの割り当ては変わらない。
+   * Z 段がいつも「ド レ ミ ファ ソ ラ シ」の白鍵、A 段が黒鍵のまま（左はしの白鍵を基準にすると、ファ始まりで V が黒鍵になるなど、
+   * キーボードの白黒と鍵盤の白黒がずれる）
+   */
+  function keyboardBase(start) {
+    return start - pitchClass(start);
   }
 
   /**
@@ -300,8 +346,10 @@
     if (['doremi', 'cde', 'none'].includes(raw.names)) s.names = raw.names;
     const v = Number(raw.volume);
     if (Number.isFinite(v)) s.volume = Math.max(0, Math.min(100, Math.round(v)));
+    // 以前はドだけ（24・36・…・96）を保存していた。その値はそのまま同じドとして読む（白鍵なので移し替え不要）。
+    // 黒鍵の値は左どなりの白鍵に、範囲の外は A0〜C8 に収める（画面の幅による上限は描くときに clampStart で見る）
     const st = Number(raw.start);
-    if (Number.isFinite(st)) s.start = Math.max(24, Math.min(96, Math.round(st / 12) * 12));
+    if (raw.start !== null && raw.start !== '' && Number.isFinite(st)) s.start = clampStart(st);
     if (['us', 'jis'].includes(raw.layout)) s.layout = raw.layout;
     const b = Number(raw.bpm);
     if (Number.isFinite(b)) s.bpm = Math.max(30, Math.min(240, Math.round(b)));
@@ -312,7 +360,7 @@
   return {
     A4_MIDI, A4_HZ, LOWEST, HIGHEST, KEY_OFFSETS, LAYOUT_DIFF, DEFAULTS, TIMBRES,
     frequency, pitchClass, octaveOf, isBlack, noteName, keyLabel, guessLayout,
-    midiForCode, codesForMidi, keyboardRange, clampStart, voiceDesign, normalizeSettings,
+    midiForCode, codesForMidi, keyboardRange, clampStart, nextWhite, maxStart, shiftStart, lastWhite, rangeLabel, keyboardBase, voiceDesign, normalizeSettings,
     velocityLevel, parseMidiMessage,
   };
 });

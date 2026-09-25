@@ -90,10 +90,9 @@
     }
     keysEl.replaceChildren(frag);
     updateLabels();
-    const last = keys.filter((k) => !k.black).pop();
-    $('rangeLabel').textContent = Core.noteName(settings.start, 'cde') + '〜' + Core.noteName(last.midi, 'cde');
-    $('octDown').disabled = settings.start <= 24;
-    $('octUp').disabled = Core.clampStart(settings.start + 12, whites) === settings.start;
+    $('rangeLabel').textContent = Core.rangeLabel(settings.start, whites);
+    $('octDown').disabled = settings.start <= Core.LOWEST;
+    $('octUp').disabled = settings.start >= Core.maxStart(whites);
     document.documentElement.classList.toggle('narrow', whites <= 8);
   }
 
@@ -105,7 +104,7 @@
       if (settings.names === 'none') name.textContent = '';
       else if (settings.names === 'doremi') name.textContent = black ? '' : Core.noteName(midi, 'doremi');
       else name.textContent = black ? '' : Core.noteName(midi, 'cde');
-      const codes = Core.codesForMidi(midi, settings.start);
+      const codes = Core.codesForMidi(midi, Core.keyboardBase(settings.start));
       kb.textContent = showLabels() ? codes.map((c) => Core.keyLabel(c, settings.layout, learned)).join(' ') : '';
     }
   }
@@ -210,11 +209,12 @@
       return;
     }
     if (code === 'ArrowLeft' || code === 'ArrowRight') {
+      // ← → は白鍵 1 つ、Shift を押しながらで 1 オクターブ（押し続けると続けて動く）
       e.preventDefault();
-      if (!e.repeat) shiftOctave(code === 'ArrowLeft' ? -1 : 1);
+      shiftRange(code === 'ArrowLeft' ? -1 : 1, e.shiftKey ? 'octave' : 'white');
       return;
     }
-    const midi = Core.midiForCode(code, settings.start);
+    const midi = Core.midiForCode(code, Core.keyboardBase(settings.start));
     if (midi == null) return;
     e.preventDefault();
     markKeyboard();
@@ -274,15 +274,49 @@
   }
 
   // ---- 音域・音名・サステイン・音量 ----
-  function shiftOctave(dir) {
-    const next = Core.clampStart(settings.start + dir * 12, whites);
-    if (next === settings.start) return;
+  /** 音域を白鍵 1 つ（unit = 'white'）か 1 オクターブ（'octave'）動かす。動かなければ false */
+  function shiftRange(dir, unit) {
+    const next = Core.shiftStart(settings.start, whites, dir, unit);
+    if (next === settings.start) return false;
     settings.start = next;
     save();
     render();
+    return true;
   }
-  $('octDown').addEventListener('click', () => shiftOctave(-1));
-  $('octUp').addEventListener('click', () => shiftOctave(1));
+  // ◀ ▶: タップで白鍵 1 つ。長押しで 1 オクターブ（押し続けると 0.5 秒ごとに続けて）。Shift＋クリックでも 1 オクターブ
+  function bindStepper(btn, dir) {
+    let timer = null;
+    let long = false;
+    const stop = () => {
+      clearTimeout(timer);
+      clearInterval(timer);
+      timer = null;
+    };
+    btn.addEventListener('pointerdown', (e) => {
+      if (e.button > 0) return;
+      long = false;
+      stop();
+      timer = setTimeout(() => {
+        long = true;
+        if (!shiftRange(dir, 'octave')) return stop();
+        timer = setInterval(() => {
+          if (!shiftRange(dir, 'octave')) stop();
+        }, 500);
+      }, 450);
+    });
+    for (const t of ['pointerup', 'pointercancel', 'pointerleave']) btn.addEventListener(t, stop);
+    window.addEventListener('pointerup', stop);
+    btn.addEventListener('contextmenu', (e) => e.preventDefault());
+    btn.addEventListener('click', (e) => {
+      if (long) {
+        long = false; // 長押しのあとの click では動かさない
+        return;
+      }
+      shiftRange(dir, e.shiftKey ? 'octave' : 'white');
+    });
+  }
+  bindStepper($('octDown'), -1);
+  bindStepper($('octUp'), 1);
 
   document.querySelectorAll('input[name="names"]').forEach((r) => {
     r.checked = r.value === settings.names;
@@ -310,7 +344,6 @@
   vol.addEventListener('input', () => {
     settings.volume = Number(vol.value);
     synth.setVolume(settings.volume / 100);
-  synth.setTimbre(settings.timbre);
     save();
   });
 
@@ -506,5 +539,5 @@
   }
 
   // テスト用（Playwright から中を見る）
-  window.__piano = { synth, held, settings, render, handleMidi, midiPedals };
+  window.__piano = { synth, held, settings, render, handleMidi, midiPedals, shiftRange };
 })();
