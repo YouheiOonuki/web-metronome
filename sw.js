@@ -12,7 +12,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'web-metronome-';
-const CACHE_NAME   = `${CACHE_PREFIX}v4`; // キャッシュする中身の構成を変えたら上げる
+const CACHE_NAME   = `${CACHE_PREFIX}v5`; // キャッシュする中身の構成を変えたら上げる
 
 /** 初回インストール時に取得しておくファイル（オフラインで開けるページ一式） */
 const PRECACHE_URLS = [

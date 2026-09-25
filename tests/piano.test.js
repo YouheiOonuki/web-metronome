@@ -106,10 +106,114 @@ test('鍵盤の範囲: 白鍵 8・15・22 本と黒鍵の数・位置', () => {
     }
   }
   assert.equal(Core.clampStart(48, 15), 48);
-  assert.equal(Core.clampStart(0, 15), 24); // C1 より下にしない
+  assert.equal(Core.clampStart(0, 15), 21); // A0 より下にしない
   assert.equal(Core.clampStart(120, 15), 84); // C6〜C8 が上限（C8 = 108）
   assert.equal(Core.clampStart(120, 8), 96);
-  assert.equal(Core.clampStart(53, 15), 48); // ドにそろえる
+  assert.equal(Core.clampStart(120, 22), 72);
+  assert.equal(Core.clampStart(120, 29), 60);
+  assert.equal(Core.clampStart(53, 15), 53); // ファ（F3）から始められる
+  assert.equal(Core.clampStart(54, 15), 53); // 黒鍵（F♯3）は左どなりの白鍵へ
+  assert.equal(Core.clampStart(22, 15), 21); // A♯0 → A0
+  assert.equal(Core.clampStart(85, 15), 84); // C♯6 → C6、上限をこえない
+});
+
+test('どの白鍵からでも始められる: 範囲・黒鍵の位置・右はし', () => {
+  for (let start = 21; start <= 108; start++) {
+    if (Core.isBlack(start)) continue;
+    for (const whites of [8, 15, 22, 29]) {
+      const ks = Core.keyboardRange(start, whites);
+      assert.equal(ks[0].midi, start);
+      assert.equal(ks[0].black, false);
+      assert.equal(ks[ks.length - 1].black, false);
+      assert.equal(ks.filter((k) => !k.black).length, whites);
+      // 右はしは左はしと同じ音名（白鍵 7 つで 1 オクターブ）
+      assert.equal(Core.pitchClass(Core.lastWhite(start, whites)), Core.pitchClass(start));
+      assert.equal(Core.lastWhite(start, whites), start + ((whites - 1) / 7) * 12);
+      for (const k of ks.filter((x) => x.black)) {
+        const left = ks.find((x) => !x.black && x.whiteIndex === k.whiteIndex);
+        assert.equal(k.midi, left.midi + 1);
+      }
+    }
+  }
+  // ファ始まり: F3 の次の黒鍵は F♯3（白鍵 0 番の右）、E のあとには黒鍵がない
+  const f = Core.keyboardRange(53, 8);
+  assert.deepEqual(f.map((k) => k.midi), [53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65]);
+});
+
+test('音域を白鍵 1 つずつ・1 オクターブずつ動かす（黒鍵には止まらない・A0〜C8）', () => {
+  // 白鍵 1 つずつ: C3 → D3 → E3 → F3（E→F は半音）… B3 → C4
+  let s = 48;
+  const seen = [s];
+  for (let i = 0; i < 7; i++) {
+    s = Core.shiftStart(s, 15, 1, 'white');
+    seen.push(s);
+  }
+  assert.deepEqual(seen, [48, 50, 52, 53, 55, 57, 59, 60]);
+  for (let i = 0; i < 7; i++) s = Core.shiftStart(s, 15, -1, 'white');
+  assert.equal(s, 48);
+  // どこから何回動かしても黒鍵に止まらず、範囲に収まる
+  for (const whites of [8, 15, 22, 29]) {
+    let x = 21;
+    let steps = 0;
+    while (true) {
+      const n = Core.shiftStart(x, whites, 1, 'white');
+      if (n === x) break;
+      assert.ok(!Core.isBlack(n));
+      assert.ok(n > x && n - x <= 2);
+      x = n;
+      steps++;
+    }
+    assert.equal(x, Core.maxStart(whites));
+    assert.equal(Core.lastWhite(x, whites), 108); // 右はしが C8 でちょうど止まる
+    assert.equal(steps, 52 - whites); // 88 鍵の白鍵は 52 本
+    while (true) {
+      const n = Core.shiftStart(x, whites, -1, 'white');
+      if (n === x) break;
+      assert.ok(!Core.isBlack(n));
+      x = n;
+    }
+    assert.equal(x, 21); // A0 で止まる
+  }
+  // 1 オクターブ: 同じ音名のまま 12 半音。端では端まで（越えない）
+  assert.equal(Core.shiftStart(53, 15, 1, 'octave'), 65);
+  assert.equal(Core.shiftStart(53, 15, -1, 'octave'), 41);
+  assert.equal(Core.shiftStart(28, 15, -1, 'octave'), 21); // E1 → A0（E0 は範囲の外）
+  assert.equal(Core.shiftStart(79, 15, 1, 'octave'), 84); // G5 → C6（G6〜G8 は C8 を越える）
+  assert.equal(Core.shiftStart(21, 15, -1, 'octave'), 21);
+  assert.equal(Core.shiftStart(84, 15, 1, 'white'), 84);
+  // 画面の幅が変わって上限をこえたら、黒鍵でない上限へ
+  assert.equal(Core.clampStart(81, 29), 60);
+});
+
+test('音域の表示', () => {
+  assert.equal(Core.rangeLabel(48, 15), 'C3〜C5');
+  assert.equal(Core.rangeLabel(53, 15), 'F3〜F5');
+  assert.equal(Core.rangeLabel(45, 15), 'A2〜A4');
+  assert.equal(Core.rangeLabel(21, 8), 'A0〜A1');
+  assert.equal(Core.rangeLabel(84, 15), 'C6〜C8');
+  assert.equal(Core.rangeLabel(59, 22), 'B3〜B6');
+});
+
+test('パソコンのキーの基準は左はしの白鍵を含むオクターブのド（Z がド、白黒がずれない）', () => {
+  assert.equal(Core.keyboardBase(48), 48);
+  assert.equal(Core.keyboardBase(53), 48); // F3 始まり → Z = C3
+  assert.equal(Core.keyboardBase(59), 48); // B3 始まり → Z = C3
+  assert.equal(Core.keyboardBase(60), 60);
+  assert.equal(Core.keyboardBase(21), 12); // A0 始まり → Z = C0（A0 より下のキーは鳴らない）
+  for (let start = 21; start <= 96; start++) {
+    if (Core.isBlack(start)) continue;
+    const base = Core.keyboardBase(start);
+    assert.ok(base <= start && start - base < 12);
+    // Z 段のキーはいつも白鍵、A 段（S D G H J）はいつも黒鍵
+    for (const c of ['KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'KeyQ', 'KeyW', 'KeyE', 'KeyR']) {
+      assert.equal(Core.isBlack(Core.midiForCode(c, base)), false, c);
+    }
+    for (const c of ['KeyS', 'KeyD', 'KeyG', 'KeyH', 'KeyJ', 'Digit2', 'Digit3']) {
+      assert.equal(Core.isBlack(Core.midiForCode(c, base)), true, c);
+    }
+    // 左はしの白鍵には必ずキーがある（Z 段か Q 段）
+    assert.ok(Core.codesForMidi(start, base).length > 0);
+  }
 });
 
 test('音色の設計: 倍音はナイキストより下、低い音ほど長く響く', () => {
@@ -240,11 +344,22 @@ test('設定の正規化（保存されていた値をそのまま信じない�
   const t = Core.normalizeSettings({ names: '<b>', volume: 'abc', start: -100, layout: 'dvorak', bpm: 999 });
   assert.equal(t.names, 'doremi');
   assert.equal(t.volume, 70);
-  assert.equal(t.start, 24);
+  assert.equal(t.start, 21); // A0 より下にしない
   assert.equal(t.layout, '');
   assert.equal(t.bpm, 240);
   assert.equal(t.timbre, 'piano');
   assert.equal(Core.normalizeSettings({ timbre: 'organ' }).timbre, 'organ');
+  // 以前の保存（ドだけ 24〜96）はそのまま同じドとして読む
+  for (const old of [24, 36, 48, 60, 72, 84, 96]) assert.equal(Core.normalizeSettings({ start: old }).start, old);
+  // 白鍵ならどこからでも保存できる。黒鍵・範囲外・変な値は直す
+  assert.equal(Core.normalizeSettings({ start: 53 }).start, 53);
+  assert.equal(Core.normalizeSettings({ start: '45' }).start, 45);
+  assert.equal(Core.normalizeSettings({ start: 66 }).start, 65);
+  assert.equal(Core.normalizeSettings({ start: 200 }).start, 108);
+  assert.equal(Core.normalizeSettings({ start: 'abc' }).start, 48);
+  assert.equal(Core.normalizeSettings({ start: null }).start, 48);
+  assert.equal(Core.normalizeSettings({ start: '' }).start, 48);
+  assert.equal(Core.normalizeSettings({ start: 52.6 }).start, 53);
   assert.equal(Core.normalizeSettings({ timbre: '__proto__' }).timbre, 'piano');
 });
 
