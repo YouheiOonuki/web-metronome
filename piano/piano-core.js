@@ -146,28 +146,154 @@
   }
 
   /**
-   * 1 音の音色の設計（ピアノに似せた加算合成）。
-   * partials: 倍音ごとの振幅（高い音ほど倍音を減らす）、decay: 自然に減衰する時定数（秒。低い音ほど長い）、
-   * cutoffStart / cutoffEnd: ローパスの開始と終わり（打鍵の直後は明るく、だんだん丸くなる）
+   * 音色の一覧（すべてその場で合成する。録音した音は使わない）。
+   * 画面の選択肢と保存する値（id）。並びは画面の順
    */
-  function voiceDesign(midi) {
-    const f = frequency(midi);
-    const n = Math.max(1, Math.min(10, Math.floor(10000 / f))); // ナイキストのかなり下まで
-    const bright = midi < 48 ? 1 : midi < 72 ? 0.85 : 0.6;
+  const TIMBRES = Object.freeze([
+    { id: 'piano', name: 'ピアノ' },
+    { id: 'epiano', name: 'エレピ' },
+    { id: 'organ', name: 'オルガン' },
+    { id: 'musicbox', name: 'オルゴール' },
+    { id: 'synth', name: 'シンセ' },
+    { id: 'strings', name: 'ストリングス風' },
+  ]);
+  const TIMBRE_IDS = TIMBRES.map((t) => t.id);
+
+  /** ナイキスト（44.1kHz の半分 22,050Hz）のかなり下、top Hz（既定 11,000Hz）までに収まる倍音の数（max 本まで） */
+  const harmonicsUnder = (f, max, top = 11000) => Math.max(1, Math.min(max, Math.floor(top / f)));
+
+  /** 倍音の振幅の表（添字 = 何倍音か。0 番は直流で常に 0）。amp(k) が 0 の倍音は鳴らさない */
+  function partialsOf(f, max, amp, top) {
+    const n = harmonicsUnder(f, max, top);
     const partials = [0];
-    for (let k = 1; k <= n; k++) {
-      // 弦を 1/7 の位置で打った弦の近似（7 倍音が弱い）× 高い倍音ほど小さく
-      const hammer = Math.abs(Math.sin((Math.PI * k) / 7.3));
-      partials.push((hammer / Math.pow(k, 1.1)) * (k === 1 ? 1 : bright));
+    for (let k = 1; k <= n; k++) partials.push(amp(k));
+    return partials;
+  }
+
+  /** 低い音ほど長い減衰の時定数（秒）。ピアノの形。base は C4 での値 */
+  const decayFor = (f, base, lo, hi) => Math.max(lo, Math.min(hi, base * Math.pow(261.63 / f, 0.7)));
+
+  /**
+   * 1 音の音色の設計。timbre は TIMBRES の id（知らない値はピアノ）。返り値の意味:
+   * - f: 周波数、partials: 倍音ごとの振幅（PeriodicWave に渡す。ブラウザが最大 1 に正規化する）
+   * - detune: 重ねる発振器ごとのずれ（セント）。数 = 発振器の数（CPU のため 1〜2 個）
+   * - cutoffStart → cutoffEnd: ローパスの動き（cutoffTau 秒の時定数）、Q: ローパスの山
+   * - 音量（音量の形 = エンベロープ）: attack 秒で level まで上がり → tau1 で level × mid へ →
+   *   t2 秒から tau2 で level × sustain へ（sustain が 0 なら自然に消える。0 より大きければ押している間は鳴り続ける）
+   * - release: 鍵を離したときに消える時定数（秒）、noise: 打鍵・キーの「コツ」の大きさ（0 = なし）
+   * level は 10 音の和音を音量最大で鳴らしても割れないように、オフラインで書き出して決めた（synth.js の最後で軽く頭を抑える）
+   */
+  function voiceDesign(midi, timbre) {
+    const f = frequency(midi);
+    const bright = midi < 48 ? 1 : midi < 72 ? 0.85 : 0.6;
+    switch (timbre) {
+      case 'epiano': {
+        // 丸い基音に 2 倍音と、たたいた直後だけ明るい高い倍音（ローパスで早く丸くする）。2 つを ±4 セントずらして揺れを出す
+        const table = { 1: 1, 2: 0.3, 3: 0.06, 4: 0.12, 5: 0.03 };
+        const decay = decayFor(f, 1.8, 0.35, 4);
+        return {
+          f, partials: partialsOf(f, 5, (k) => table[k] || 0), detune: [-4, 4],
+          cutoffStart: Math.min(12000, f * 10 + 1500), cutoffEnd: Math.min(6000, f * 3 + 500), cutoffTau: 0.25, Q: 0.5,
+          attack: 0.003, level: 0.3, mid: 0.55, tau1: 0.15, t2: 0.25, sustain: 0, tau2: decay, release: 0.12, noise: 0.02, decay,
+        };
+      }
+      case 'organ': {
+        // ドローバーのオルガンに似せた倍音（1・2・3・4・6・8 倍）。押している間は同じ大きさで鳴り続ける。発振器は 1 つ
+        const table = { 1: 1, 2: 0.7, 3: 0.45, 4: 0.35, 6: 0.2, 8: 0.15 };
+        const c = Math.min(14000, f * 12 + 2000);
+        return {
+          f, partials: partialsOf(f, 8, (k) => table[k] || 0), detune: [0],
+          cutoffStart: c, cutoffEnd: c, cutoffTau: 0.1, Q: 0.5,
+          attack: 0.008, level: 0.15, mid: 1, tau1: 0.05, t2: 0.01, sustain: 1, tau2: 0.1, release: 0.03, noise: 0.015, decay: Infinity,
+        };
+      }
+      case 'musicbox': {
+        // 基音と 4 倍・6 倍の小さな倍音（金属の歯を弾いた音）。すぐに減衰し、鍵を離しても少し残る。発振器は 1 つ
+        const table = { 1: 1, 4: 0.2, 6: 0.08 };
+        const decay = Math.max(0.25, Math.min(1.6, 1.2 * Math.pow(523.25 / f, 0.5)));
+        const c = Math.min(14000, f * 10 + 2000);
+        return {
+          f, partials: partialsOf(f, 6, (k) => table[k] || 0), detune: [0],
+          cutoffStart: c, cutoffEnd: c, cutoffTau: 0.1, Q: 0.5,
+          attack: 0.002, level: 0.45, mid: 0.5, tau1: 0.05, t2: 0.08, sustain: 0, tau2: decay, release: 0.5, noise: 0.03, decay,
+        };
+      }
+      case 'synth': {
+        // のこぎり波（k 倍音の振幅 1/k）を ±7 セントずらした 2 つ。ローパスに山（Q）をつけて明るい → 少し暗い
+        return {
+          f, partials: partialsOf(f, 24, (k) => 1 / k), detune: [-7, 7],
+          cutoffStart: Math.min(12000, f * 16 + 1200), cutoffEnd: Math.min(8000, f * 4 + 600), cutoffTau: 0.2, Q: 3,
+          attack: 0.005, level: 0.2, mid: 0.75, tau1: 0.1, t2: 0.2, sustain: 0.6, tau2: 0.5, release: 0.12, noise: 0, decay: Infinity,
+        };
+      }
+      case 'strings': {
+        // のこぎり波に近い倍音を ±8 セントずらした 2 つ。ゆっくり立ち上がり（0.12 秒）、押している間は鳴り続け、ゆっくり消える
+        const c = Math.min(9000, f * 5 + 900);
+        return {
+          f, partials: partialsOf(f, 16, (k) => 1 / Math.pow(k, 1.2)), detune: [-8, 8],
+          cutoffStart: c, cutoffEnd: c, cutoffTau: 0.1, Q: 0.5,
+          attack: 0.12, level: 0.18, mid: 1, tau1: 0.1, t2: 0.12, sustain: 0.85, tau2: 0.8, release: 0.35, noise: 0, decay: Infinity,
+        };
+      }
+      default: {
+        // ピアノ（最初からの音）: 倍音を足した加算合成。弦を 1/7 の位置で打った弦の近似（7 倍音が弱い）× 高い倍音ほど小さく。
+        // 2 つを ±1.5 セントずらして弦 2 本のうなり。打鍵の直後は明るく → だんだん丸く。低い音ほど長く響く
+        const decay = decayFor(f, 2.4, 0.4, 6);
+        const partials = partialsOf(f, 10, (k) => {
+          const hammer = Math.abs(Math.sin((Math.PI * k) / 7.3));
+          return (hammer / Math.pow(k, 1.1)) * (k === 1 ? 1 : bright);
+        }, 10000);
+        return {
+          f, partials, detune: [-1.5, 1.5],
+          cutoffStart: Math.min(16000, f * 14 + 1500), cutoffEnd: Math.min(9000, f * 3 + 400), cutoffTau: decay * 0.3, Q: 0.5,
+          attack: 0.004, level: 0.32, mid: 0.4, tau1: Math.min(0.25, decay * 0.12), t2: 0.3, sustain: 0, tau2: decay, release: 0.08, noise: 0.06, decay,
+        };
+      }
     }
-    const decay = Math.max(0.4, Math.min(6, 2.4 * Math.pow(261.63 / f, 0.7)));
-    const cutoffStart = Math.min(16000, f * 14 + 1500);
-    const cutoffEnd = Math.min(9000, f * 3 + 400);
-    return { f, partials, decay, cutoffStart, cutoffEnd };
+  }
+
+  /**
+   * MIDI の強さ（ベロシティ 1〜127）→ 音の大きさ（0〜0.8）。
+   * 127 で画面の鍵盤・パソコンのキーと同じ 0.8（それより大きくしない = 割れない範囲のまま）。弱く弾くほど小さく（1.5 乗）
+   */
+  function velocityLevel(v) {
+    const x = Math.max(0, Math.min(127, Number(v) || 0)) / 127;
+    return +(0.8 * (0.12 + 0.88 * Math.pow(x, 1.5))).toFixed(4);
+  }
+
+  /**
+   * MIDI の 1 メッセージ（Uint8Array か配列）を読む。Web MIDI の midimessage は 1 回に 1 メッセージ（ランニングステータスは展開済み）。
+   * 返り値: { type: 'on', note, velocity, channel } | { type: 'off', note, channel } | { type: 'sustain', on, channel } |
+   *         { type: 'allOff', channel } | null（使わないメッセージ）。channel は 1〜16（全チャンネルを受ける）
+   * - ノートオン（0x9n）でベロシティ 0 はノートオフ（MIDI 1.0 の決まり）
+   * - CC64（ダンパーペダル）は 64 以上でオン、63 以下でオフ
+   * - CC120（オールサウンドオフ）・CC123（オールノートオフ）は全部止める
+   * - 0xF0 以上（システムメッセージ: クロック 0xF8、アクティブセンシング 0xFE など）は無視
+   */
+  function parseMidiMessage(data) {
+    if (!data || data.length < 1) return null;
+    const status = data[0];
+    if (!(status >= 0x80 && status < 0xf0)) return null;
+    const kind = status & 0xf0;
+    const channel = (status & 0x0f) + 1;
+    const d1 = data[1];
+    const d2 = data[2];
+    const ok = (x) => Number.isInteger(x) && x >= 0 && x < 0x80;
+    if (kind === 0x80 || kind === 0x90) {
+      if (!ok(d1) || !ok(d2)) return null;
+      if (kind === 0x90 && d2 > 0) return { type: 'on', note: d1, velocity: d2, channel };
+      return { type: 'off', note: d1, channel };
+    }
+    if (kind === 0xb0) {
+      if (!ok(d1) || !ok(d2)) return null;
+      if (d1 === 64) return { type: 'sustain', on: d2 >= 64, channel };
+      if (d1 === 120 || d1 === 123) return { type: 'allOff', channel };
+    }
+    return null;
   }
 
   /** 設定の正規化（localStorage から読んだ値をそのまま信じない） */
-  const DEFAULTS = Object.freeze({ names: 'doremi', volume: 70, start: 48, sustain: false, layout: '', bpm: 90 });
+  const DEFAULTS = Object.freeze({ names: 'doremi', volume: 70, start: 48, sustain: false, layout: '', bpm: 90, timbre: 'piano' });
   function normalizeSettings(raw) {
     const s = Object.assign({}, DEFAULTS);
     if (!raw || typeof raw !== 'object') return s;
@@ -179,12 +305,14 @@
     if (['us', 'jis'].includes(raw.layout)) s.layout = raw.layout;
     const b = Number(raw.bpm);
     if (Number.isFinite(b)) s.bpm = Math.max(30, Math.min(240, Math.round(b)));
+    if (TIMBRE_IDS.includes(raw.timbre)) s.timbre = raw.timbre;
     return s;
   }
 
   return {
-    A4_MIDI, A4_HZ, LOWEST, HIGHEST, KEY_OFFSETS, LAYOUT_DIFF, DEFAULTS,
+    A4_MIDI, A4_HZ, LOWEST, HIGHEST, KEY_OFFSETS, LAYOUT_DIFF, DEFAULTS, TIMBRES,
     frequency, pitchClass, octaveOf, isBlack, noteName, keyLabel, guessLayout,
     midiForCode, codesForMidi, keyboardRange, clampStart, voiceDesign, normalizeSettings,
+    velocityLevel, parseMidiMessage,
   };
 });

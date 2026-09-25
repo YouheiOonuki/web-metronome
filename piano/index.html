@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ブラウザピアノ｜無料・キーボードとタップで弾ける鍵盤（和音・ドレミ表示）</title>
-  <meta name="description" content="ブラウザで弾ける無料のピアノ。スマホは横向きで 2 オクターブ、複数の指で和音も鳴ります。パソコンはキーボードで演奏（JIS・US 配列どちらも同じ位置）。ドレミ／CDE の音名、サステイン、クリックつき。音はその場で合成するので読み込み待ちなし・登録不要。">
+  <meta name="description" content="ブラウザで弾ける無料のピアノ。スマホは横向きで 2 オクターブ、複数の指で和音も鳴ります。パソコンはキーボードで演奏（JIS・US 配列どちらも同じ位置）。ドレミ／CDE の音名、サステイン、クリック、音色 6 種、MIDI キーボードにも対応。音はその場で合成するので読み込み待ちなし・登録不要。">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://yorozu-craft.com/web-metronome/piano/">
 
@@ -63,6 +63,20 @@
         <button type="button" class="ctl toggle" id="clickBtn" aria-pressed="false" title="クリック（メトロノーム）を鳴らす">♩ クリック</button>
         <input type="number" id="bpm" min="30" max="240" value="90" inputmode="numeric" aria-label="クリックの BPM">
       </div>
+      <details class="more" id="more">
+        <summary class="ctl" id="moreSum"><span class="more-label">音色: </span><span id="timbreName">ピアノ</span><span id="midiMark"></span></summary>
+        <div class="more-panel" id="morePanel">
+          <fieldset class="timbres">
+            <legend>音色</legend>
+            <div class="timbre-list" id="timbreList"></div>
+          </fieldset>
+          <div class="midi">
+            <p class="midi-title">MIDI キーボード</p>
+            <button type="button" class="ctl" id="midiBtn">MIDI キーボードをつなぐ</button>
+            <p class="midi-status" id="midiStatus" aria-live="polite">USB などでつないだ MIDI キーボードで弾けます。</p>
+          </div>
+        </div>
+      </details>
       <a class="ctl help" href="./guide.html">使い方</a>
     </header>
 

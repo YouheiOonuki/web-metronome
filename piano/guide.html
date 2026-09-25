@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ブラウザピアノの使い方｜キーボードの割り当て（JIS・US）とスマホで和音</title>
-  <meta name="description" content="無料のブラウザピアノの使い方。パソコンのキーボードの割り当て（JIS 配列でも US 配列でも同じ位置）、スマホで和音を弾く、ドレミ／CDE の音名、サステインとクリック。">
+  <meta name="description" content="無料のブラウザピアノの使い方。パソコンのキーボードの割り当て（JIS 配列でも US 配列でも同じ位置）、スマホで和音、音色の切り替え、MIDI キーボードのつなぎ方と対応ブラウザ。">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://yorozu-craft.com/web-metronome/piano/guide.html">
 
   <meta property="og:title" content="ブラウザピアノの使い方｜キーボードの割り当てとスマホで和音">
-  <meta property="og:description" content="パソコンのキーボードの割り当て（JIS・US）、スマホで和音、ドレミ／CDE の音名、サステインとクリック。">
+  <meta property="og:description" content="パソコンのキーボードの割り当て（JIS・US）、スマホで和音、音色の切り替え、MIDI キーボードのつなぎ方。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://yorozu-craft.com/web-metronome/piano/guide.html">
   <meta property="og:locale" content="ja_JP">
@@ -58,8 +58,9 @@
         <li>スマホは横向きで 2 オクターブ。◀ ▶ で 1 オクターブずつ動かします。</li>
         <li>「サステイン」で指を離しても音が残ります（Space を押している間も）。</li>
         <li>「♩ クリック」で拍を鳴らし、横の数字で BPM を変えます。</li>
+        <li>「音色」で音色の切り替えと MIDI キーボードの接続をします。</li>
       </ol>
-      <p>拍子やアクセントを変えたいときは<a href="../">メトロノーム</a>を使ってください。</p>
+      <p>音名の CDE は真ん中のド（下に線のあるド）を C4 と書きます。音の高さはラ（A4）を 440 Hz とする平均律です。拍子やアクセントを変えたいときは<a href="../">メトロノーム</a>を使ってください。</p>
     </article>
 
     <article class="content-section">
@@ -75,22 +76,27 @@
       <p>音はキーの文字ではなくキーボードの上の位置で決めています。JIS 配列でも US 配列でも、同じ位置のキーが同じ音です。印字が違うのは右はしの 3 つ（白鍵は JIS「@ [」・US「[ ]」、黒鍵は JIS「^」・US「=」）だけで、鍵盤の上の文字は押したキーに合わせて変わります。← → で音域を 1 オクターブずつ動かします。</p>
     </article>
 
-    <article class="content-section">
-      <h2>音名の表示（ドレミ・CDE）</h2>
-      <p>「ドレミ」「CDE」「なし」を切り替えます。CDE の数字はオクターブで、真ん中のド（下に線のあるド）を C4 と書きます。音の高さはラ（A4）を 440 Hz とする平均律です。</p>
+    <article id="midi" class="content-section">
+      <h2>音色と MIDI キーボード</h2>
+      <p>「音色」でピアノ・エレピ・オルガン・オルゴール・シンセ・ストリングス風を選べます。オルガン・シンセ・ストリングス風は押している間鳴り続けます。</p>
+      <p>MIDI キーボードや電子ピアノを USB でつなぎ、「MIDI キーボードをつなぐ」を押して許可すると、その鍵盤で弾けます。強さとダンパーペダルも効きます。Bluetooth の機器は、端末が MIDI 機器として認識していれば使えます。</p>
+      <p>使えるのはパソコンの Chrome・Edge と Android の Chrome です。Safari（Mac・iPhone・iPad）は対応しておらず、iPhone・iPad は Chrome でも使えません。</p>
     </article>
 
     <article id="faq" class="content-section">
       <h2>よくある質問</h2>
       <dl>
         <dt>ピアノの音が出ないときは？</dt>
-        <dd>ブラウザは画面に触れるまで音を出させないので、最初に鍵盤を押したときに音の準備をします。端末の音量と消音の設定を確かめ、もう一度鍵盤を押してください。</dd>
+        <dd>最初に鍵盤を押したときに音の準備をします。端末の音量と消音の設定を確かめ、もう一度押してください。</dd>
 
         <dt>録音したピアノの音ですか？</dt>
         <dd>録音した音は使わず、倍音を重ねてその場で作った音です。読み込みを待たずに弾けますが、本物のピアノとは響きが違います。</dd>
 
+        <dt>MIDI キーボードが鳴らないときは？</dt>
+        <dd>機器の名前が出なければ差し直してください。許可しなかったときは、サイトの設定で MIDI を許可してから押し直してください。</dd>
+
         <dt>オフラインでも弾けますか？</dt>
-        <dd>一度開くとファイルがブラウザに保存され、電波のない場所でも開けます（メトロノームと同じ）。</dd>
+        <dd>一度開くとブラウザに保存され、電波のない場所でも開けます。</dd>
       </dl>
     </article>
 
@@ -98,8 +104,8 @@
       <h2>ご利用上の注意・データの扱い</h2>
       <ul>
         <li>イヤホンで使うときは、音量を下げてから弾き始めてください。</li>
-        <li>設定（音名・音量・音域・BPM）はこの端末のブラウザ（localStorage、キー <code>web-metronome_piano</code>）にだけ保存され、外部には送信されません。</li>
-        <li>録音・マイクなど端末の機能は使いません。</li>
+        <li>設定（音名・音量・音域・BPM・音色）はこの端末のブラウザ（localStorage、キー <code>web-metronome_piano</code>）にだけ保存され、外部には送信されません。</li>
+        <li>録音・マイクは使いません。MIDI キーボードはボタンを押して許可したときだけ使い、受けるだけで何も送りません。</li>
       </ul>
       <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSd8B90qh5lEIyr25iw1jOjdQjOyaPZ1_z2wMB4kH-EmEeJYWw/viewform?usp=pp_url&amp;entry.585564634=web-metronome" target="_blank" rel="noopener">ご要望・不具合の報告（Google フォーム）</a>：いただいた内容をもとに直します。お返事はしていません。</p>
       <p>運営者情報・免責事項は<a href="../../about.html">こちら</a>、プライバシーポリシーは<a href="../../privacy-policy.html">こちら</a>です（すべてのツールで共通）。</p>
@@ -108,6 +114,7 @@
     <article class="content-section">
       <h2>更新履歴</h2>
       <ul>
+        <li>2026-09-25 音色の切り替え（6 種）と MIDI キーボードに対応</li>
         <li>2026-09-25 公開</li>
       </ul>
     </article>
