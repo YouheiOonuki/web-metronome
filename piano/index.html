@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ブラウザピアノ｜無料・キーボードとタップで弾ける鍵盤（和音・ドレミ表示）</title>
+  <meta name="description" content="ブラウザで弾ける無料のピアノ。スマホは横向きで 2 オクターブ、複数の指で和音も鳴ります。パソコンはキーボードで演奏（JIS・US 配列どちらも同じ位置）。ドレミ／CDE の音名、サステイン、クリックつき。音はその場で合成するので読み込み待ちなし・登録不要。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yorozu-craft.com/web-metronome/piano/">
+
+  <meta property="og:title" content="ブラウザピアノ｜キーボードとタップで弾ける無料の鍵盤">
+  <meta property="og:description" content="スマホは横向きで 2 オクターブ・和音も。パソコンはキーボードで。ドレミ／CDE 表示、サステイン、クリックつき。登録不要。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/web-metronome/piano/">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://yorozu-craft.com/web-metronome/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta name="theme-color" content="#1f1d1a">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ブラウザピアノ",
+    "url": "https://yorozu-craft.com/web-metronome/piano/",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+    "inLanguage": "ja",
+    "browserRequirements": "Requires JavaScript"
+  }
+  </script>
+
+  <!-- 全画面で弾く画面なので AdSense は meta だけ（自動広告が鍵盤を隠さないように。広告は使い方ページで出す） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+
+  <link rel="stylesheet" href="./piano.css">
+</head>
+<body class="piano-page">
+  <main class="piano-app">
+    <header class="bar" id="bar">
+      <h1 class="bar-title">ブラウザピアノ</h1>
+      <div class="group" role="group" aria-label="音の高さ">
+        <button type="button" class="ctl" id="octDown" aria-label="1 オクターブ低く">◀</button>
+        <span class="range" id="rangeLabel" aria-live="polite">C3〜C5</span>
+        <button type="button" class="ctl" id="octUp" aria-label="1 オクターブ高く">▶</button>
+      </div>
+      <div class="group seg" role="radiogroup" aria-label="音名の表示">
+        <label><input type="radio" name="names" value="doremi" checked><span>ドレミ</span></label>
+        <label><input type="radio" name="names" value="cde"><span>CDE</span></label>
+        <label><input type="radio" name="names" value="none"><span>なし</span></label>
+      </div>
+      <button type="button" class="ctl toggle" id="sustainBtn" aria-pressed="false" title="Space を押している間もサステイン">サステイン</button>
+      <label class="group vol"><span class="vol-label">音量</span><input type="range" id="volume" min="0" max="100" value="70" aria-label="音量"></label>
+      <div class="group click" role="group" aria-label="クリック（メトロノーム）">
+        <button type="button" class="ctl toggle" id="clickBtn" aria-pressed="false" title="クリック（メトロノーム）を鳴らす">♩ クリック</button>
+        <input type="number" id="bpm" min="30" max="240" value="90" inputmode="numeric" aria-label="クリックの BPM">
+      </div>
+      <a class="ctl help" href="./guide.html">使い方</a>
+    </header>
+
+    <div class="stage" id="stage" aria-label="鍵盤。タップかパソコンのキーで弾きます">
+      <div class="keys" id="keys"></div>
+    </div>
+    <p class="rotate-hint" id="rotateHint">横向きにすると 2 オクターブ出ます</p>
+
+    <footer class="mini-foot">
+      <a href="../">メトロノーム</a>
+      <a href="./guide.html">使い方</a>
+      <a href="../../">yorozu-craft トップ</a>
+      <a href="../../about.html">運営者情報</a>
+      <a href="../../privacy-policy.html">プライバシーポリシー</a>
+      <span>入力も演奏も外部に送信しません</span>
+    </footer>
+  </main>
+
+  <script src="./piano-core.js"></script>
+  <script src="./synth.js"></script>
+  <script src="./piano.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

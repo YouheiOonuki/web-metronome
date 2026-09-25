@@ -1,0 +1,8 @@
+{
+  "name": "web-metronome",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  }
+}

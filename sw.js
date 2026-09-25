@@ -27,6 +27,14 @@ const PRECACHE_URLS = [
   './icon-maskable-512.png',
   './apple-touch-icon.png',
   './guide.html',
+  // ブラウザピアノ（/web-metronome/piano/）
+  './piano/',
+  './piano/index.html',
+  './piano/piano.css',
+  './piano/piano-core.js',
+  './piano/synth.js',
+  './piano/piano.js',
+  './piano/guide.html',
   // 運営者情報・プライバシーポリシーは yorozu-craft 共通ページ（../about.html 等）に移したのでキャッシュしない
 ];
 

@@ -31,6 +31,15 @@ API を一切使用せず、HTML / CSS / JavaScript の静的サイトとして�
 - **キーボード操作**: Space で再生/停止、↑↓ で BPM ±1（Shift で ±10）、T でタップ
 - **設定の記憶**: BPM・拍子・アクセントなどを localStorage に保存し、次回起動時に復元
 
+### ブラウザピアノ（`/web-metronome/piano/`、2026-09-25 追加）
+- **鍵盤**: 画面の幅に合わせて白鍵 8・15・22・29 本（スマホ横向きで 2 オクターブ＋1、パソコンで 3 オクターブ＋1）。◀ ▶・← → で 1 オクターブずつ動かす（C1〜C8）
+- **タップ**: Pointer Events で指ごとに押している鍵を持つので、複数の指で和音。指をすべらせると隣の鍵へ
+- **パソコンのキー**: `KeyboardEvent.code`（キーの物理的な位置）で割り当てる。Z 段＝白鍵・A 段＝黒鍵（左はしのドから）、Q 段・数字の段＝1 オクターブ上。JIS と US で印字が違うのは `BracketLeft`（@／[）・`Equal`（^／=）・`BracketRight`（[／]）の 3 つだけで、画面の文字は `navigator.keyboard.getLayoutMap()` か、押された `key` から合わせる
+- **音**: 録音した音は使わず Web Audio で合成（倍音の PeriodicWave ×2 のうなり、ローパスの動き、2 段の減衰、打鍵のノイズ）。A4 = 440 Hz の 12 平均律。最初の操作の中で AudioContext を作って resume
+- **そのほか**: 音名（ドレミ／CDE／なし）、サステイン（ボタンか Space を押している間）、音量、4 拍のクリック（BPM 30〜240）。設定は `web-metronome_piano` に保存
+- **広告**: 弾く画面（`piano/index.html`）は全画面の楽器なので AdSense の meta だけ。使い方（`piano/guide.html`）は通常の自動広告
+- **テスト**: `npm test`（`tests/piano.test.js`。周波数・キーの割り当て・鍵盤の範囲・設定の正規化・ページの決まり）
+
 ### PWA（ホーム画面に追加・オフライン）
 - **manifest.webmanifest**: アプリ名・アイコン・表示モード（standalone）
 - **sw.js（Service Worker）**: ネットワーク優先でファイルをキャッシュ。オンラインなら常に最新、オフラインならキャッシュで動く
@@ -63,6 +72,10 @@ web-metronome/
 ├── icon-maskable-512.png   # アプリアイコン（Android の丸・角丸マスク用）
 ├── apple-touch-icon.png    # iPhone / iPad のホーム画面用アイコン（180x180）
 ├── og-image.png            # SNS共有用画像（1200x630）
+├── piano/                  # ブラウザピアノ（index.html・guide.html・piano-core.js・synth.js・piano.js・piano.css）
+├── tests/                  # node --test のテスト（piano.test.js）
+├── package.json            # npm test
+├── .github/workflows/test.yml
 ├── sitemap.xml             # サイトマップ
 ├── .gitignore              # 秘密情報・退避コピーの除外設定
 └── README.md               # このファイル
