@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 鍵盤（メトロノームの favicon と同じ和紙風の配色） -->
+  <rect x="4" y="10" width="56" height="44" rx="6" fill="#8b4513"/>
+  <rect x="8" y="14" width="48" height="36" rx="2" fill="#faf6ee"/>
+  <!-- 白鍵の境目 -->
+  <path d="M20 14 V50 M32 14 V50 M44 14 V50" stroke="#8b4513" stroke-width="2"/>
+  <!-- 黒鍵 -->
+  <rect x="15.5" y="14" width="9" height="21" rx="1.5" fill="#3a3025"/>
+  <rect x="39.5" y="14" width="9" height="21" rx="1.5" fill="#3a3025"/>
+  <!-- 中央の C の印 -->
+  <circle cx="26" cy="44" r="3" fill="#5a7a3a"/>
+</svg>
