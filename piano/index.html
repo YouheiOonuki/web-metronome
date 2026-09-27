@@ -22,7 +22,7 @@
   <meta name="theme-color" content="#1f1d1a">
   <link rel="manifest" href="../manifest.webmanifest">
   <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
 
   <script type="application/ld+json">
   {
@@ -47,6 +47,8 @@
   <main class="piano-app">
     <header class="bar" id="bar">
       <h1 class="bar-title">ブラウザピアノ</h1>
+      <!-- メトロノームとピアノは同列（オーナー指摘 2026-09-27）。両方の画面の上端に同じ切り替えを置く -->
+      <nav class="mode-switch" aria-label="メトロノームとピアノの切り替え"><a href="../" title="メトロノームへ"><svg class="ms-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8.5 2.5h7l5 19h-17z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 18 16.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="ms-text">メトロノーム</span></a><a href="./" aria-current="page" title="ピアノ（今の画面）"><svg class="ms-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><rect x="2.5" y="4.5" width="19" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4.5v15M15 4.5v15" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 5h3v7h-3zM13.5 5h3v7h-3z" fill="currentColor"/></svg><span class="ms-text">ピアノ</span></a></nav>
       <div class="group" role="group" aria-label="音の高さ">
         <button type="button" class="ctl step" id="octDown" aria-label="白鍵 1 つ低く（長押しで 1 オクターブ）" title="白鍵 1 つ低く（長押し・Shift＋←で 1 オクターブ）">◀</button>
         <span class="range" id="rangeLabel" aria-live="polite">C3〜C5</span>
@@ -64,7 +66,7 @@
         <input type="number" id="bpm" min="30" max="240" value="90" inputmode="numeric" aria-label="クリックの BPM">
       </div>
       <details class="more" id="more">
-        <summary class="ctl" id="moreSum"><span class="more-label">音色: </span><span id="timbreName">ピアノ</span><span id="midiMark"></span></summary>
+        <summary class="ctl" id="moreSum" title="音色・MIDI・保存・運営者情報など"><span class="more-label">音色: </span><span id="timbreName">ピアノ</span><span id="midiMark"></span></summary>
         <div class="more-panel" id="morePanel">
           <fieldset class="timbres">
             <legend>音色</legend>
@@ -79,6 +81,17 @@
             <p class="midi-title">保存</p>
             <button type="button" class="ctl" data-reset-storage="web-metronome_piano">保存した内容をすべて消す（初期状態に戻す）</button>
           </div>
+          <!-- 共通ページへのリンクはここ（鍵盤の下に置くと、横向きのスマホで弾いた指が当たって誤タップが続いたため。2026-09-27） -->
+          <nav class="midi site-links" aria-label="このサイト">
+            <p class="midi-title">このサイト</p>
+            <ul>
+              <li><a href="./guide.html">ピアノの使い方</a></li>
+              <li><a href="../../">yorozu-craft トップ</a></li>
+              <li><a href="../../about.html">運営者情報</a></li>
+              <li><a href="../../privacy-policy.html">プライバシーポリシー</a></li>
+            </ul>
+            <p class="midi-status">入力も演奏も外部に送信しません。</p>
+          </nav>
         </div>
       </details>
       <a class="ctl help" href="./guide.html">使い方</a>
@@ -89,14 +102,7 @@
     </div>
     <p class="rotate-hint" id="rotateHint">横向きにすると 2 オクターブ出ます</p>
 
-    <footer class="mini-foot">
-      <a href="../">メトロノーム</a>
-      <a href="./guide.html">使い方</a>
-      <a href="../../">yorozu-craft トップ</a>
-      <a href="../../about.html">運営者情報</a>
-      <a href="../../privacy-policy.html">プライバシーポリシー</a>
-      <span>入力も演奏も外部に送信しません</span>
-    </footer>
+    <!-- 鍵盤の下にはリンクを置かない（フッターは「音色」のメニューと使い方ページへ移した）。画面はちょうど 1 画面で、下にスクロールしない -->
   </main>
 
   <script src="./piano-core.js"></script>

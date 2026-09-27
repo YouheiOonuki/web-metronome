@@ -412,3 +412,31 @@ test('保存のキーは web-metronome_ で始まる', () => {
   const keys = [...js.matchAll(/STORAGE_KEY = '([^']+)'/g)].map((x) => x[1]);
   assert.deepEqual(keys, ['web-metronome_piano']);
 });
+
+test('メトロノームとピアノは同列: 両方の画面の上端に同じ切り替えがあり、今の画面に aria-current', () => {
+  const pages = [
+    ['index.html', /<header class="app-header">\s*<!--[^>]*-->\s*<nav class="mode-switch"/, './', './piano/', 0],
+    ['piano/index.html', /<header class="bar" id="bar">\s*<h1[^>]*>[^<]*<\/h1>\s*<!--[^>]*-->\s*<nav class="mode-switch"/, '../', './', 1],
+  ];
+  for (const [f, top, metro, piano, cur] of pages) {
+    const html = read(f);
+    assert.ok(top.test(html), f + ': 切り替えは上端（ヘッダー・バーの先頭）');
+    const nav = html.match(/<nav class="mode-switch"[^>]*>([\s\S]*?)<\/nav>/)[1];
+    const links = [...nav.matchAll(/<a href="([^"]+)"([^>]*)>[\s\S]*?<span class="ms-text">([^<]+)<\/span><\/a>/g)];
+    assert.deepEqual(links.map((m) => [m[1], m[3]]), [[metro, 'メトロノーム'], [piano, 'ピアノ']], f);
+    links.forEach((m, i) => assert.equal(/aria-current="page"/.test(m[2]), i === cur, f + ' ' + m[3]));
+  }
+});
+
+test('ピアノの弾く画面: 鍵盤より後ろにリンクを置かない（横向きの誤タップ）。共通ページへはメニューから', () => {
+  const html = read('piano/index.html');
+  const afterStage = html.slice(html.indexOf('id="stage"'), html.indexOf('</main>'));
+  assert.ok(!/<a\s/.test(afterStage), '鍵盤の下にリンクがある');
+  assert.ok(!/<footer/.test(html));
+  const menu = html.slice(html.indexOf('<details class="more"'), html.indexOf('</details>'));
+  for (const href of ['./guide.html', '../../', '../../about.html', '../../privacy-policy.html']) assert.ok(menu.includes(`href="${href}"`), href);
+  const css = read('piano/piano.css');
+  assert.ok(/\.stage \{[^}]*touch-action: none/.test(css));
+  assert.ok(/body\.piano-page \{[^}]*overflow: hidden;[^}]*overscroll-behavior: none/.test(css));
+  assert.ok(/height: 100dvh/.test(css));
+});
