@@ -38,6 +38,13 @@ const PRECACHE_URLS = [
   './piano/guide.html',
   './piano/favicon.svg',
   './share-card.js',
+  // カポ・移調（/web-metronome/capo/）
+  './capo/',
+  './capo/index.html',
+  './capo/capo.css',
+  './capo/capo-core.js',
+  './capo/capo.js',
+  './capo/guide.html',
   // 運営者情報・プライバシーポリシーは yorozu-craft 共通ページ（../about.html 等）に移したのでキャッシュしない
 ];
 
