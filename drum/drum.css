@@ -104,3 +104,6 @@ body.drum-page { touch-action: manipulation; }
 .note { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.6; }
 .site-links ul { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 14px; }
 .site-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); }
+
+/* マスは drum.js が入れる。入るまで下の段を隠し、押し下げを CLS に数えさせない（2026-10-03 の点検で CLS 0.391） */
+.grid:empty ~ * { visibility: hidden; }
