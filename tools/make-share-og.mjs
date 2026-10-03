@@ -31,10 +31,12 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1 });
 // 外への要求は止める（計測・広告を汚さない）
 await page.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => r.abort());
+page.on('pageerror', (e) => console.error('ページのエラー: ' + e.message));
 let n = 0;
 for (const p of pages()) {
   if (!p.image || (only.length && !only.some((o) => p.image.includes(o)))) continue;
   const out = path.join(ROOT, p.image);
+  await page.goto('about:blank');   // 同じ URL で # だけ違うと読み込み直さないので、毎回まっさらにする
   if (p.ogShot) await p.ogShot(page, base);
   else await page.setContent(p.og, { waitUntil: 'load' });
   const type = out.endsWith('.jpg') ? 'jpeg' : 'png';
