@@ -1,0 +1,106 @@
+/* ドラムマシン（打ち込む画面。色は端末のライト／ダークに合わせる。ピアノと同じトークン） */
+:root {
+  --bg: #f4f1ea;
+  --card: #fffdf8;
+  --text: #2b2620;
+  --muted: #6b6259;
+  --accent: #8b4513;
+  --border: #d8cfc2;
+  --cell: #ebe4d8;
+  --strong: #8b4513;
+  --weak: #d9a46b;
+  --head: #f2c38a;
+  --on-accent: #fff;
+  font-family: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1f1d1a;
+    --card: #2a2724;
+    --text: #efe9e1;
+    --muted: #b3a99c;
+    --accent: #e0a060;
+    --border: #4a443d;
+    --cell: #34302b;
+    --strong: #e0a060;
+    --weak: #8a6440;
+    --head: #6b5434;
+    --on-accent: #1f1d1a;
+  }
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; background: var(--bg); color: var(--text); }
+body.drum-page { touch-action: manipulation; }
+.sr, .bar-title { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.drum-app { max-width: 1100px; margin: 0 auto; padding: 0 8px calc(16px + env(safe-area-inset-bottom)); }
+
+.bar { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+.mode-switch { display: flex; flex-shrink: 0; border: 1px solid var(--accent); border-radius: 8px; overflow: hidden; }
+.mode-switch a {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  min-width: 44px; min-height: 44px; padding: 0 10px;
+  color: var(--text); text-decoration: none; font-weight: 600; white-space: nowrap; font-size: 14px;
+}
+.mode-switch a + a { border-left: 1px solid var(--accent); }
+.mode-switch a[aria-current="page"] { background: var(--accent); color: var(--on-accent); cursor: default; }
+.mode-switch a:focus-visible { outline: 2px solid var(--text); outline-offset: -4px; }
+.ms-icon { flex-shrink: 0; }
+@media (max-width: 420px) {
+  .ms-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+.help { margin-left: auto; }
+.lead { margin: 2px 0 8px; font-size: 14px; color: var(--muted); }
+
+.ctl, .transport select, .box select, .box input[type="number"] {
+  min-width: 44px; min-height: 44px; padding: 0 10px;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--card); color: var(--text); font: inherit; font-size: 15px;
+  display: inline-flex; align-items: center; justify-content: center; text-decoration: none; cursor: pointer;
+}
+.transport { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border: 0; margin: 0; padding: 0; }
+.group { display: flex; align-items: center; gap: 4px; }
+.play {
+  min-height: 48px; min-width: 112px; padding: 0 18px; border-radius: 10px; border: 0;
+  background: var(--accent); color: var(--on-accent); font: inherit; font-size: 17px; font-weight: 700; cursor: pointer;
+}
+.play[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.bpm { display: inline-flex; align-items: center; gap: 2px; }
+.bpm input {
+  width: 4.2em; min-height: 44px; font: inherit; font-size: 18px; font-weight: 700; text-align: center;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.unit-label { color: var(--muted); font-size: 14px; }
+.meter select { min-width: 56px; }
+.preset select { max-width: 13em; }
+.status { min-height: 1.2em; margin: 6px 0 2px; font-size: 13px; color: var(--muted); }
+
+/* 打ち込みのマス。狭い画面では拍の切れ目で折り返す（drum.js が段ごとに並べる） */
+.grid { display: flex; flex-direction: column; gap: 10px; margin: 4px 0; }
+.chunk { display: grid; gap: 2px; }
+.chunk-head { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; line-height: 16px; }
+.track-name { display: flex; align-items: center; font-size: 12px; font-weight: 600; color: var(--muted); padding-right: 2px; white-space: nowrap; overflow: hidden; }
+.cell {
+  width: 40px; height: 40px; border: 0; border-radius: 6px; padding: 0;
+  background: var(--cell); cursor: pointer; touch-action: manipulation;
+}
+.cell.beat-start { box-shadow: inset 3px 0 0 var(--border); }
+.cell.lv1 { background: var(--weak); }
+.cell.lv2 { background: var(--strong); }
+.cell.now { outline: 3px solid var(--head); outline-offset: -3px; }
+.cell:focus-visible { outline: 3px solid var(--text); outline-offset: -3px; }
+.legend-key .cell { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; margin-left: 8px; cursor: default; }
+.row-tools { display: flex; align-items: center; gap: 10px; margin: 6px 0 10px; font-size: 13px; color: var(--muted); }
+
+.box { border: 1px solid var(--border); border-radius: 10px; background: var(--card); margin: 8px 0; }
+.box > summary { min-height: 44px; display: flex; align-items: center; padding: 0 12px; cursor: pointer; font-weight: 600; }
+.box-body { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.box-body label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.box-body input[type="range"] { width: 180px; }
+.box-body .check { min-height: 44px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.note { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.site-links ul { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 14px; }
+.site-links a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); }

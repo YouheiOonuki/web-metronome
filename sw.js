@@ -12,7 +12,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'web-metronome-';
-const CACHE_NAME   = `${CACHE_PREFIX}v9`; // キャッシュする中身の構成を変えたら上げる
+const CACHE_NAME   = `${CACHE_PREFIX}v10`; // キャッシュする中身の構成を変えたら上げる
 
 /** 初回インストール時に取得しておくファイル（オフラインで開けるページ一式） */
 const PRECACHE_URLS = [
@@ -45,6 +45,15 @@ const PRECACHE_URLS = [
   './capo/capo-core.js',
   './capo/capo.js',
   './capo/guide.html',
+  // ドラムマシン（/web-metronome/drum/）
+  './drum/',
+  './drum/index.html',
+  './drum/drum.css',
+  './drum/drum-core.js',
+  './drum/drum-synth.js',
+  './drum/drum.js',
+  './drum/guide.html',
+  './drum/favicon.svg',
   // 運営者情報・プライバシーポリシーは yorozu-craft 共通ページ（../about.html 等）に移したのでキャッシュしない
 ];
 

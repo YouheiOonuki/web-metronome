@@ -413,17 +413,18 @@ test('保存のキーは web-metronome_ で始まる', () => {
   assert.deepEqual(keys, ['web-metronome_piano']);
 });
 
-test('メトロノームとピアノは同列: 両方の画面の上端に同じ切り替えがあり、今の画面に aria-current', () => {
+test('メトロノーム・ピアノ・ドラムは同列: 3 つの画面の上端に同じ切り替えがあり、今の画面に aria-current', () => {
   const pages = [
-    ['index.html', /<header class="app-header">\s*<!--[^>]*-->\s*<nav class="mode-switch"/, './', './piano/', 0],
-    ['piano/index.html', /<header class="bar" id="bar">\s*<h1[^>]*>[^<]*<\/h1>\s*<!--[^>]*-->\s*<nav class="mode-switch"/, '../', './', 1],
+    ['index.html', /<header class="app-header">\s*<!--[^>]*-->\s*<nav class="mode-switch"/, './', './piano/', './drum/', 0],
+    ['piano/index.html', /<header class="bar" id="bar">\s*<h1[^>]*>[^<]*<\/h1>\s*<!--[^>]*-->\s*<nav class="mode-switch"/, '../', './', '../drum/', 1],
+    ['drum/index.html', /<header class="bar">\s*<h1[^>]*>[^<]*<\/h1>\s*<nav class="mode-switch"/, '../', '../piano/', './', 2],
   ];
-  for (const [f, top, metro, piano, cur] of pages) {
+  for (const [f, top, metro, piano, drum, cur] of pages) {
     const html = read(f);
     assert.ok(top.test(html), f + ': 切り替えは上端（ヘッダー・バーの先頭）');
     const nav = html.match(/<nav class="mode-switch"[^>]*>([\s\S]*?)<\/nav>/)[1];
     const links = [...nav.matchAll(/<a href="([^"]+)"([^>]*)>[\s\S]*?<span class="ms-text">([^<]+)<\/span><\/a>/g)];
-    assert.deepEqual(links.map((m) => [m[1], m[3]]), [[metro, 'メトロノーム'], [piano, 'ピアノ']], f);
+    assert.deepEqual(links.map((m) => [m[1], m[3]]), [[metro, 'メトロノーム'], [piano, 'ピアノ'], [drum, 'ドラム']], f);
     links.forEach((m, i) => assert.equal(/aria-current="page"/.test(m[2]), i === cur, f + ' ' + m[3]));
   }
 });

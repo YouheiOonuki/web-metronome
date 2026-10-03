@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="washi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ドラムマシンの使い方｜変拍子の打ち込み・MIDI と WAV の書き出し</title>
+  <meta name="description" content="無料のブラウザ・ドラムマシンの使い方。マスの打ち込み、7/8 や 5/4 の変拍子、3 連とスイング、BPM の数値入力、MIDI ファイル・WAV の書き出し、MIDI 機器への送信。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yorozu-craft.com/web-metronome/drum/guide.html">
+
+  <meta property="og:title" content="ドラムマシンの使い方｜変拍子の打ち込み・MIDI と WAV の書き出し">
+  <meta property="og:description" content="マスの打ち込み、変拍子、3 連とスイング、MIDI ファイル・WAV の書き出し、MIDI 機器への送信。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/web-metronome/drum/guide.html">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://yorozu-craft.com/web-metronome/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="yorozu-craft">
+
+  <!-- Google AdSense（使い方ページは通常の自動広告） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .keymap { border-collapse: collapse; margin: 8px 0 12px; font-size: 14px; }
+    .keymap th, .keymap td { border: 1px solid var(--border-color, #ccc); padding: 4px 8px; text-align: left; }
+    a.open-drum { display: inline-block; margin: 4px 0 8px; padding: 12px 24px; border-radius: 8px; background: var(--btn-primary-bg); color: var(--btn-primary-text); font-weight: 600; text-decoration: none; }
+    @media print { ins.adsbygoogle, .google-auto-placed, iframe[id^="aswift"], iframe[id^="google_ads"] { display: none !important; } }
+  </style>
+</head>
+<body>
+
+  <nav class="site-nav" aria-label="メインナビゲーション">
+    <a href="./" class="nav-brand">ドラムマシン</a>
+    <ul class="nav-links">
+      <li><a href="./">ドラム</a></li>
+      <li><a href="./guide.html" aria-current="page">使い方</a></li>
+      <li><a href="../">メトロノーム</a></li>
+      <li><a href="../piano/">ピアノ</a></li>
+    </ul>
+  </nav>
+
+  <main class="app-main legal-page">
+
+    <article class="content-section">
+      <h1>ドラムマシンの使い方（ブラウザで打ち込み）</h1>
+      <p>マスを押してリズムを打ち込み、▶ で鳴らします。音はブラウザの中で作り、外部に送信しません。</p>
+      <p><a class="open-drum" href="./">ドラムマシンを開く</a></p>
+
+      <h2>使い方</h2>
+      <ol>
+        <li>マスを押すたびに 強 → 弱 → 空 と変わります。</li>
+        <li>BPM は数字を入れるか − ＋ で変えます（20〜300）。</li>
+        <li>拍子は分子と分母を選びます。見本から読み込むこともできます。</li>
+        <li>▶ で再生、もう一度押すと止まります（Space でも）。</li>
+      </ol>
+    </article>
+
+    <article class="content-section">
+      <h2>変拍子・3 連・スイングの打ち込み</h2>
+      <p>拍子は 1〜16 拍、分母は 2・4・8・16 から選びます。7/8 を 16 分で刻むと 1 小節は 14 マスです。「くわしい設定」でマスの細かさ（8 分・16 分・3 連）、小節の数（1〜4）、スイング（50〜75%）を変えます。</p>
+      <p>テンポは既定で 4 分音符を 1 拍として数えます（見本の 6/8・7/8 は 8 分音符）。8 分音符や付点 4 分で数えたいときは「テンポの基準」を変えます。</p>
+    </article>
+
+    <article id="export" class="content-section">
+      <h2>MIDI ファイル・WAV で書き出す</h2>
+      <p>「書き出し」でくり返す回数を決め、「WAV で保存」か「MIDI ファイルで保存」を押します。WAV は 44.1 kHz・16 bit・モノラルで、5 分までです。</p>
+      <p>スマホの縦向きでは、音の名前を表の略号で出します。MIDI ファイルは General MIDI のドラムの音の番号で書きます。テンポと拍子も入るので、DAW に読み込むとそのまま並びます。</p>
+      <table class="keymap">
+        <thead><tr><th>音（略号）</th><th>番号</th><th>音（略号）</th><th>番号</th></tr></thead>
+        <tbody>
+          <tr><td>キック（BD）</td><td>36</td><td>ハイハット（HH）</td><td>42</td></tr>
+          <tr><td>リム（RS）</td><td>37</td><td>ロータム（LT）</td><td>45</td></tr>
+          <tr><td>スネア（SD）</td><td>38</td><td>オープンHH（OH）</td><td>46</td></tr>
+          <tr><td>クラップ（CP）</td><td>39</td><td>クラッシュ（CY）</td><td>49</td></tr>
+          <tr><td></td><td></td><td>ハイタム（HT）</td><td>50</td></tr>
+        </tbody>
+      </table>
+      <p>「MIDI 機器に送る」で、つないだ音源や DAW へ再生中の音を送ります（チャンネル 1〜16）。使えるのはパソコンの Chrome・Edge と Android の Chrome です。</p>
+    </article>
+
+    <article id="faq" class="content-section">
+      <h2>よくある質問</h2>
+      <dl class="faq-list">
+        <dt>ドラムマシンの音が出ないときは？</dt>
+        <dd>最初に ▶ かマスを押したときに音の準備をします。端末の音量と消音の設定を確かめてください。</dd>
+
+        <dt>録音したドラムの音ですか？</dt>
+        <dd>録音した音は使わず、その場で合成した電子音です。本物のドラムとは響きが違います。</dd>
+
+        <dt>打ち込みを人に渡すには？</dt>
+        <dd>「共有リンクをコピー」で、打ち込みとテンポ・拍子の入ったリンクを作ります。</dd>
+      </dl>
+    </article>
+
+    <article id="notes" class="content-section">
+      <h2>ご利用上の注意・データの扱い</h2>
+      <ul>
+        <li>イヤホンで使うときは、音量を下げてから鳴らしてください。</li>
+        <li>打ち込みと設定はこの端末のブラウザ（localStorage、キー <code>web-metronome_drum</code>）にだけ保存され、外部には送信されません。書き出し・読み込み・消去はこの画面のボタンから。</li>
+        <li>MIDI 機器はボタンを押して許可したときだけ使い、送るのは音の合図だけです。</li>
+      </ul>
+      <p>音の番号の根拠: General MIDI の打楽器の割り当て（MIDI Association「General MIDI Level 1」）。最終確認日 2026-10-03。</p>
+      <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSd8B90qh5lEIyr25iw1jOjdQjOyaPZ1_z2wMB4kH-EmEeJYWw/viewform?usp=pp_url&amp;entry.585564634=web-metronome" target="_blank" rel="noopener">ご要望・不具合の報告（Google フォーム）</a>：いただいた内容をもとに直します。お返事はしていません。</p>
+      <p>運営者情報・免責事項は<a href="../../about.html">こちら</a>、プライバシーポリシーは<a href="../../privacy-policy.html">こちら</a>です（すべてのツールで共通）。</p>
+    </article>
+
+    <article class="content-section">
+      <h2>更新履歴</h2>
+      <ul>
+        <li>2026-10-03 公開</li>
+      </ul>
+    </article>
+
+  </main>
+
+  <footer class="app-footer">
+    <nav class="footer-nav" aria-label="フッターナビゲーション">
+      <ul>
+        <li><a href="../../">yorozu-craft トップ</a></li>
+        <li><a href="./">ドラム</a></li>
+        <li><a href="./guide.html" aria-current="page">使い方</a></li>
+        <li><a href="../">メトロノーム</a></li>
+        <li><a href="../piano/">ピアノ</a></li>
+        <li><a href="../../about.html">運営者情報</a></li>
+        <li><a href="../../privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </nav>
+    <p class="copyright">&copy; 2026 yorozu-craft. All rights reserved.</p>
+  </footer>
+
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
