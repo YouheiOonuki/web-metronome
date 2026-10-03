@@ -120,6 +120,7 @@
     }
     if (s.size === 0) {
       synth.noteOn(midi, velocity);
+      if (src !== 'play') recordOnset(midi);
       const el = keyEls.get(midi);
       if (el) el.classList.add('down');
     }
@@ -198,6 +199,7 @@
   }
   window.addEventListener('keydown', (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey || isTyping(e.target)) return;
+    if (!$('shareDialog').hidden) return; // 共有のカードを開いている間は鍵盤を鳴らさない
     const code = e.code;
     if ((code === 'Space' || code.startsWith('Arrow')) && isFormControl(e.target)) return;
     if (code === 'Space') {
@@ -520,6 +522,76 @@
         : 'MIDI キーボードにつなげませんでした。もう一度押してください。');
     });
   });
+
+  // ---- 共有される結果（yorozu-plans K124・企画書 60）: いま弾いたフレーズ（最後の 32 音まで）を 1 枚のカードに ----
+  // URL は音色ごとの着地ページ（s/<音色>.html。OG 画像だけが違い、開くとすぐこの画面へ移る）＋「#p=…」。入るのは音の高さ・間・音色・日時だけ
+  const SHARE_PAGE = 'https://yorozu-craft.com/web-metronome/piano/s/';
+  let onsets = []; // { midi, at }。5 秒あいたら新しいフレーズ
+  function recordOnset(midi) {
+    const at = performance.now();
+    if (onsets.length && at - onsets[onsets.length - 1].at > 5000) onsets = [];
+    onsets.push({ midi, at });
+    if (onsets.length > Core.PHRASE_MAX) onsets.shift();
+  }
+  const dialog = $('shareDialog');
+  let shown = null; // カードに出しているフレーズ { notes, timbre }
+  function openShare(shared) {
+    more.open = false;
+    releaseAll();
+    const notes = shared ? shared.notes : Core.phraseFromOnsets(onsets);
+    const timbre = shared ? shared.timbre : settings.timbre;
+    shown = notes.length ? { notes, timbre } : null;
+    $('shareTitle').textContent = shared ? '共有されたフレーズ' : 'フレーズを共有';
+    $('shareEmpty').hidden = !!shown;
+    $('sharePlay').hidden = !shown;
+    const host = $('share-host');
+    host.replaceChildren();
+    if (shown) {
+      const tname = (Core.TIMBRES.find((t) => t.id === timbre) || Core.TIMBRES[0]).name;
+      const at = shared ? shared.atMs : Date.now();
+      window.ShareCard.mount(host, {
+        shared: !!shared, label: 'ブラウザピアノ', result: Core.phraseText(notes), sub: notes.length + ' 音・音色 ' + tname,
+        when: at == null ? NaN : at, url: shared ? '' : window.ShareCard.link(SHARE_PAGE + timbre + '.html', Core.encodePhrase(notes, timbre, at)),
+        title: 'ブラウザピアノで弾いたフレーズ', btnClass: 'ctl',
+        note: shared ? '' : 'URL に入るのは音の高さ・間・音色・日時だけです。',
+      });
+    }
+    dialog.hidden = false;
+    (shown ? $('sharePlay') : $('shareClose')).focus();
+  }
+  let playTimers = [];
+  function stopPlay() {
+    playTimers.forEach(clearTimeout);
+    playTimers = [];
+    releaseSource((x) => x === 'play');
+  }
+  /** カードのフレーズを鳴らす（鍵盤の範囲にある音は光る）。音色はフレーズの音色で鳴らし、終わったら元に戻す */
+  function playShown() {
+    if (!shown || !synth.unlock()) return;
+    stopPlay();
+    synth.setTimbre(shown.timbre);
+    let t = 0;
+    shown.notes.forEach((n) => {
+      const len = Math.max(250, n.g * 100);
+      playTimers.push(setTimeout(() => press(n.m, 'play', 0.7), t));
+      playTimers.push(setTimeout(() => release(n.m, 'play'), t + len - 30));
+      t += n.g * 100;
+    });
+    playTimers.push(setTimeout(() => synth.setTimbre(settings.timbre), t + 600));
+  }
+  function closeShare() {
+    stopPlay();
+    synth.setTimbre(settings.timbre);
+    dialog.hidden = true;
+    if (location.hash) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* 古いブラウザ */ } }
+  }
+  $('shareBtn').addEventListener('click', () => openShare(null));
+  $('sharePlay').addEventListener('click', playShown);
+  $('shareClose').addEventListener('click', closeShare);
+  dialog.addEventListener('click', (e) => { if (e.target === dialog) closeShare(); });
+  window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dialog.hidden) closeShare(); });
+  const sharedPhrase = Core.decodePhrase(location.hash);
+  if (sharedPhrase) openShare(sharedPhrase);
 
   // ---- 大きさの変化 ----
   let resizeTimer = null;

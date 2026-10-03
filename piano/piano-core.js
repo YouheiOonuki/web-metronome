@@ -357,7 +357,52 @@
     return s;
   }
 
+  /**
+   * 共有される結果（yorozu-plans K124・企画書 60）: いま弾いたフレーズ（最後の 32 音まで）を「#」以降に入れる。
+   * 形: #p=60_3.62_3.64_6&v=piano&t=1790942640（音の番号 _ 次の音までの間（0.1 秒単位、1〜20）、音色、日時の UNIX 秒）。
+   * 入るのは音の高さ・間・音色・日時だけ（名前や端末の情報は入らない）。和音（同時に押した音）は間 0 で続ける
+   */
+  const PHRASE_MAX = 32;
+  const GAP_MAX = 20;
+  /** 押した時刻の列 [{ midi, at(ms) }] → [{ m, g }]（g は次の音までの間。最後の音は 4 = 0.4 秒） */
+  function phraseFromOnsets(onsets) {
+    const list = onsets.slice(-PHRASE_MAX);
+    return list.map((o, i) => {
+      const next = list[i + 1];
+      const g = next ? Math.round((next.at - o.at) / 100) : 4;
+      return { m: o.midi, g: Math.max(0, Math.min(GAP_MAX, g)) };
+    });
+  }
+  function encodePhrase(notes, timbre, atMs) {
+    const parts = ['p=' + notes.slice(-PHRASE_MAX).map((n) => n.m + '_' + n.g).join('.'), 'v=' + (TIMBRE_IDS.includes(timbre) ? timbre : 'piano')];
+    const t = Math.floor(Number(atMs) / 1000);
+    if (t >= 1500000000 && t <= 4102444800) parts.push('t=' + t);
+    return '#' + parts.join('&');
+  }
+  /** 「#p=…」→ { notes, timbre, atMs }。読めない・範囲の外なら null */
+  function decodePhrase(hash) {
+    const q = {};
+    for (const kv of String(hash || '').replace(/^#/, '').split('&')) {
+      const i = kv.indexOf('=');
+      if (i > 0) q[kv.slice(0, i)] = kv.slice(i + 1);
+    }
+    if (!/^\d{2,3}_\d{1,2}(\.\d{2,3}_\d{1,2}){0,31}$/.test(q.p || '')) return null;
+    const notes = q.p.split('.').map((x) => { const [m, g] = x.split('_').map(Number); return { m, g }; });
+    if (notes.some((n) => n.m < LOWEST || n.m > HIGHEST || n.g > GAP_MAX)) return null;
+    const t = Number(q.t);
+    return { notes, timbre: TIMBRE_IDS.includes(q.v) ? q.v : 'piano', atMs: /^\d{10}$/.test(q.t || '') && t >= 1500000000 && t <= 4102444800 ? t * 1000 : null };
+  }
+  /** フレーズを音名で（ドレミ。和音は「+」でつなぐ）。長いときは max 音で「…」 */
+  function phraseText(notes, max = 16) {
+    let out = '';
+    notes.slice(0, max).forEach((n, i) => {
+      out += (i === 0 ? '' : notes[i - 1].g === 0 ? '+' : ' ') + noteName(n.m, 'doremi');
+    });
+    return out + (notes.length > max ? ' …' : '');
+  }
+
   return {
+    PHRASE_MAX, GAP_MAX, phraseFromOnsets, encodePhrase, decodePhrase, phraseText,
     A4_MIDI, A4_HZ, LOWEST, HIGHEST, KEY_OFFSETS, LAYOUT_DIFF, DEFAULTS, TIMBRES,
     frequency, pitchClass, octaveOf, isBlack, noteName, keyLabel, guessLayout,
     midiForCode, codesForMidi, keyboardRange, clampStart, nextWhite, maxStart, shiftStart, lastWhite, rangeLabel, keyboardBase, voiceDesign, normalizeSettings,

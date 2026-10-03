@@ -94,11 +94,24 @@
           </nav>
         </div>
       </details>
+      <button type="button" class="ctl" id="shareBtn" title="いま弾いたフレーズ（最後の 32 音まで）を共有">共有</button>
       <a class="ctl help" href="./guide.html">使い方</a>
     </header>
 
     <div class="stage" id="stage" aria-label="鍵盤。タップかパソコンのキーで弾きます">
       <div class="keys" id="keys"></div>
+    </div>
+    <!-- 共有される結果（K124）: いま弾いたフレーズのカード。共有のリンクで開いたときは、送った人のフレーズ -->
+    <div class="share-dialog" id="shareDialog" role="dialog" aria-modal="true" aria-labelledby="shareTitle" hidden>
+      <div class="share-inner">
+        <p class="share-title" id="shareTitle">フレーズを共有</p>
+        <p class="share-empty" id="shareEmpty" hidden>鍵盤を弾くと、最後に弾いた 32 音までを共有できます。</p>
+        <div id="share-host"></div>
+        <div class="share-row">
+          <button type="button" class="ctl" id="sharePlay">▶ 聞く</button>
+          <button type="button" class="ctl" id="shareClose">閉じて弾く</button>
+        </div>
+      </div>
     </div>
     <p class="rotate-hint" id="rotateHint">横向きにすると 2 オクターブ出ます</p>
 
@@ -108,6 +121,7 @@
   <script src="./piano-core.js"></script>
   <script src="./synth.js"></script>
   <script src="../reset-storage.js"></script>
+  <script src="../share-card.js"></script>
   <script src="./piano.js"></script>
   <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
