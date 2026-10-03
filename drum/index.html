@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>ドラムマシン｜無料・ブラウザで打ち込み（変拍子・BPM 数値入力・MIDI・WAV 書き出し）</title>
+  <meta name="description" content="ブラウザで使える無料のドラムマシン。マスを押してリズムを打ち込み、BPM は数字で入力。7/8・5/4 などの変拍子、3 連、スイング。MIDI ファイルと WAV で書き出し、MIDI 機器へも送れます。音はその場で合成、登録不要。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yorozu-craft.com/web-metronome/drum/">
+
+  <meta property="og:title" content="ドラムマシン｜ブラウザで打ち込み・変拍子・MIDI と WAV の書き出し">
+  <meta property="og:description" content="マスを押して打ち込み、BPM は数字で。7/8・5/4 などの変拍子、3 連、スイング。MIDI ファイルと WAV で書き出し。登録不要。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/web-metronome/drum/">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://yorozu-craft.com/web-metronome/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta name="theme-color" content="#1f1d1a">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ドラムマシン",
+    "url": "https://yorozu-craft.com/web-metronome/drum/",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+    "inLanguage": "ja",
+    "browserRequirements": "Requires JavaScript"
+  }
+  </script>
+
+  <!-- 打ち込む画面なので AdSense は meta だけ（自動広告がマスや再生ボタンの間に入らないように。広告は使い方ページで出す） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+
+  <link rel="stylesheet" href="./drum.css">
+</head>
+<body class="drum-page">
+  <main class="drum-app">
+    <header class="bar">
+      <h1 class="bar-title">ドラムマシン</h1>
+      <nav class="mode-switch" aria-label="メトロノーム・ピアノ・ドラムの切り替え"><a href="../" title="メトロノームへ"><svg class="ms-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8.5 2.5h7l5 19h-17z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 18 16.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="ms-text">メトロノーム</span></a><a href="../piano/" title="ピアノへ"><svg class="ms-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><rect x="2.5" y="4.5" width="19" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 4.5v15M15 4.5v15" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 5h3v7h-3zM13.5 5h3v7h-3z" fill="currentColor"/></svg><span class="ms-text">ピアノ</span></a><a href="./" aria-current="page" title="ドラム（今の画面）"><svg class="ms-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><ellipse cx="12" cy="9" rx="8.5" ry="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 9v7c0 1.9 3.8 3.5 8.5 3.5s8.5-1.6 8.5-3.5V9" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="ms-text">ドラム</span></a></nav>
+      <a class="ctl help" href="./guide.html">使い方</a>
+    </header>
+
+    <p class="lead">マスを押して打ち込み、▶ で鳴らします。音は端末の中で作り、外部に送信しません。</p>
+
+    <fieldset class="transport">
+      <legend class="sr">再生とテンポ・拍子</legend>
+      <button type="button" class="play" id="playBtn" aria-pressed="false"><span id="playIcon" aria-hidden="true">▶</span> <span id="playText">再生</span></button>
+      <div class="group" role="group" aria-label="テンポ">
+        <button type="button" class="ctl step" id="bpmDown" aria-label="BPM を 1 下げる">−</button>
+        <label class="bpm"><span class="unit-label" id="unitLabel">♩=</span><input type="number" id="bpm" min="20" max="300" step="1" inputmode="numeric" aria-label="BPM（数字で入力）"></label>
+        <button type="button" class="ctl step" id="bpmUp" aria-label="BPM を 1 上げる">＋</button>
+      </div>
+      <div class="group meter" role="group" aria-label="拍子">
+        <select id="num" aria-label="拍子の分子（1 小節の拍の数）"></select>
+        <span aria-hidden="true">/</span>
+        <select id="den" aria-label="拍子の分母"><option value="2">2</option><option value="4">4</option><option value="8">8</option><option value="16">16</option></select>
+      </div>
+      <label class="preset"><span class="sr">見本のパターン</span><select id="preset"><option value="">見本を読み込む…</option></select></label>
+    </fieldset>
+
+    <p class="status" id="status" aria-live="polite"></p>
+    <div class="grid" id="grid" aria-label="打ち込みのマス。押すたびに 強・弱・空 と変わります"></div>
+    <div class="row-tools">
+      <button type="button" class="ctl" id="clearBtn">すべて消す</button>
+      <span class="legend-key"><span class="cell lv2" aria-hidden="true"></span>強 <span class="cell lv1" aria-hidden="true"></span>弱</span>
+    </div>
+
+    <details class="box" id="moreBox">
+      <summary id="moreSum">くわしい設定</summary>
+      <div class="box-body">
+        <label>マスの細かさ <select id="grid-res"><option value="e8">8 分</option><option value="s16">16 分</option><option value="t12">3 連（8 分 3 連）</option></select></label>
+        <label>小節の数 <select id="bars"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+        <label>テンポの基準 <select id="unit"><option value="q">♩（4 分音符 = 1 拍）</option><option value="e">♪（8 分音符 = 1 拍）</option><option value="dq">♩.（付点 4 分 = 1 拍）</option></select></label>
+        <label>スイング <input type="range" id="swing" min="50" max="75" step="1"> <output id="swingOut">50%</output></label>
+        <label>音量 <input type="range" id="volume" min="0" max="100" step="1"></label>
+        <p class="note">スイングは 8 分・16 分のマスで、2 マス目ごとに後ろへずらします（50% でまっすぐ、67% で 3 連の跳ね）。</p>
+      </div>
+    </details>
+
+    <details class="box">
+      <summary>書き出し（WAV・MIDI ファイル）</summary>
+      <div class="box-body">
+        <label>くり返す回数 <input type="number" id="loops" min="1" max="32" inputmode="numeric"></label>
+        <div class="buttons">
+          <button type="button" class="ctl" id="wavBtn">WAV で保存</button>
+          <button type="button" class="ctl" id="midBtn">MIDI ファイルで保存</button>
+        </div>
+        <p class="note" id="exportNote">ファイルは端末の中で作ります。MIDI はチャンネル 10（下の設定で変更）・General MIDI のドラムの音の番号です。</p>
+      </div>
+    </details>
+
+    <details class="box">
+      <summary id="midiSum">MIDI 機器に送る: つないでいない</summary>
+      <div class="box-body">
+        <button type="button" class="ctl" id="midiBtn">MIDI 機器をつなぐ</button>
+        <label>送る先 <select id="midiOut" disabled><option value="">（なし）</option></select></label>
+        <label>チャンネル <select id="midiCh"></select></label>
+        <label class="check"><input type="checkbox" id="localSound" checked> この画面の音も鳴らす</label>
+        <p class="note" id="midiStatus">パソコンの Chrome・Edge と Android の Chrome で使えます。押して許可したときだけ使います。</p>
+      </div>
+    </details>
+
+    <details class="box">
+      <summary>保存・共有</summary>
+      <div class="box-body">
+        <p class="note">打ち込みと設定はこの端末のブラウザ（localStorage、キー <code>web-metronome_drum</code>）にだけ保存され、外部には送信されません。書き出し・読み込み・消去はこの画面のボタンから。</p>
+        <div class="buttons">
+          <button type="button" class="ctl" id="shareBtn">共有リンクをコピー</button>
+          <button type="button" class="ctl" id="exportBtn">ファイルに書き出す</button>
+          <button type="button" class="ctl" id="importBtn">ファイルから読み込む</button>
+          <input type="file" id="importFile" accept="application/json,.json" hidden>
+          <button type="button" class="ctl" data-reset-storage="web-metronome_drum">保存した内容をすべて消す（初期状態に戻す）</button>
+        </div>
+        <p class="note" id="shareNote">共有リンクには打ち込みとテンポ・拍子だけが入ります（# 以降なのでサーバーには送られません）。</p>
+      </div>
+    </details>
+
+    <nav class="site-links" aria-label="このサイト">
+      <ul>
+        <li><a href="./guide.html">ドラムマシンの使い方</a></li>
+        <li><a href="../../">yorozu-craft トップ</a></li>
+        <li><a href="../../about.html">運営者情報</a></li>
+        <li><a href="../../privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </nav>
+  </main>
+
+  <script src="./drum-core.js"></script>
+  <script src="./drum-synth.js"></script>
+  <script src="../reset-storage.js"></script>
+  <script src="./drum.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>

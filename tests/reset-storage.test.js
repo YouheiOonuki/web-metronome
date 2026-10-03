@@ -15,10 +15,14 @@ const PAGE_PREFIXES = {
   ],
   "piano/index.html": [
     "web-metronome_piano"
+  ],
+  "drum/index.html": [
+    "web-metronome_drum"
   ]
 };
 const PAGE_LEGACY = {
-  "piano/index.html": []
+  "piano/index.html": [],
+  "drum/index.html": []
 };
 // reset-storage.js を <script src> ではなく、ページの中に埋め込んでいるページ（1 ファイルにビルドするもの）
 const INLINE = [];

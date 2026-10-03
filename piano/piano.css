@@ -195,7 +195,8 @@ html.narrow .rotate-hint { display: block; }
 
 /* 横向きのスマホ（高さが低い）: バーを 1 行に詰め、タイトルを隠す */
 @media (max-height: 480px) {
-  .bar { flex-wrap: nowrap; padding: 4px 8px; gap: 4px; overflow-x: auto; }
+  /* 切り替えがドラムを足して 3 つになった（2026-10-03）ので、間と音量・音域の幅を詰めて「使い方」まで 844px に収める */
+  .bar { flex-wrap: nowrap; padding: 4px 6px; gap: 2px; overflow-x: auto; }
   .vol-label, .more-label { display: none; }
   /* 切り替えは絵だけにして幅を詰める（名前は読み上げ・title で分かる） */
   .ms-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -204,8 +205,8 @@ html.narrow .rotate-hint { display: block; }
   .ctl, .seg span { white-space: nowrap; }
   .ctl { padding: 0 6px; }
   .seg span { padding: 0 7px; }
-  .vol input { width: 52px; }
-  .range { min-width: 4.4em; }
+  .vol input { width: 40px; }
+  .range { min-width: 3.9em; }
   .click input { width: 3.4em; padding: 0 4px; }
 }
 
