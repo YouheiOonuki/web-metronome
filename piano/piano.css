@@ -200,13 +200,13 @@ html.narrow .rotate-hint { display: block; }
   .vol-label, .more-label { display: none; }
   /* 切り替えは絵だけにして幅を詰める（名前は読み上げ・title で分かる） */
   .ms-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .mode-switch a { padding: 0 10px; }
+  .mode-switch a { padding: 0 8px; min-width: 40px; }
   .bar > * { flex-shrink: 0; }
   .ctl, .seg span { white-space: nowrap; }
-  .ctl { padding: 0 6px; }
-  .seg span { padding: 0 7px; }
+  .ctl { padding: 0 4px; }
+  .seg span { padding: 0 5px; }
   .vol input { width: 40px; }
-  .range { min-width: 3.9em; }
+  .range { min-width: 3.5em; }
   .click input { width: 3.4em; padding: 0 4px; }
 }
 
