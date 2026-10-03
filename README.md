@@ -84,7 +84,7 @@ API を一切使用せず、HTML / CSS / JavaScript の静的サイトとして�
 ```
 web-metronome/
 ├── index.html              # メインHTML（SEOメタタグ・構造化データ含む）
-├── style.css               # テーマ対応スタイルシート
+├── style.css               # テーマ対応スタイルシート（先頭の yorozu-common の印の間はサイト共通の部品。手で直さない。正本は youheioonuki.github.io の tools/common/）
 ├── main.js                 # アプリケーションロジック
 ├── sw.js                   # Service Worker（オフライン対応）
 ├── manifest.webmanifest    # PWA の設定（アプリ名・アイコンなど）

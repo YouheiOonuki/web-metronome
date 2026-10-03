@@ -80,7 +80,7 @@ body.drum-page { touch-action: manipulation; }
 /* 打ち込みのマス。狭い画面では拍の切れ目で折り返す（drum.js が段ごとに並べる） */
 .grid { display: flex; flex-direction: column; gap: 10px; margin: 4px 0; }
 .chunk { display: grid; gap: 2px; }
-.chunk-head { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; line-height: 16px; }
+.chunk-head { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: center; line-height: 16px; }
 .track-name { display: flex; align-items: center; font-size: 12px; font-weight: 600; color: var(--muted); padding-right: 2px; white-space: nowrap; overflow: hidden; }
 .cell {
   width: 40px; height: 40px; border: 0; border-radius: 6px; padding: 0;

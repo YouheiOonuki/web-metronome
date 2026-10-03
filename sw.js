@@ -12,7 +12,7 @@
 'use strict';
 
 const CACHE_PREFIX = 'web-metronome-';
-const CACHE_NAME   = `${CACHE_PREFIX}v10`; // キャッシュする中身の構成を変えたら上げる
+const CACHE_NAME   = `${CACHE_PREFIX}v11`; // キャッシュする中身の構成を変えたら上げる（v11: 共通の部品 yorozu-common v1）
 
 /** 初回インストール時に取得しておくファイル（オフラインで開けるページ一式） */
 const PRECACHE_URLS = [
