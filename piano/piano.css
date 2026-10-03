@@ -208,3 +208,11 @@ html.narrow .rotate-hint { display: block; }
   .range { min-width: 4.4em; }
   .click input { width: 3.4em; padding: 0 4px; }
 }
+
+/* 共有される結果（K124）: フレーズのカードを鍵盤の上に重ねる */
+.share-dialog { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 12px; background: rgba(0, 0, 0, 0.45); }
+.share-inner { width: min(460px, 100%); max-height: 100%; overflow-y: auto; background: var(--card); color: var(--text); border-radius: 12px; padding: 14px 16px; }
+.share-title { margin: 0 0 4px; font-weight: 700; }
+.share-empty { margin: 8px 0; color: var(--muted); }
+.share-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.share-inner .share-card .ctl { background: var(--bg); }
