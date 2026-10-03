@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カポ・移調の計算｜ギターのコード変換とカポ早見表・ダイアトニック表（無料）</title>
+  <meta name="description" content="コード譜を貼ると、キーを半音ずつ上げ下げしたコードと、カポを付けたときに弾く形を出します。カポ 0〜7 フレットで押さえやすい形が何個になるかの早見表、キーごとのダイアトニックコード表つき。登録不要・入力は送信しません。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yorozu-craft.com/web-metronome/capo/">
+
+  <meta property="og:title" content="カポ・移調の計算｜ギターのコード変換とカポ早見表">
+  <meta property="og:description" content="コード譜を貼ると、移調したコードとカポで弾く形。押さえやすい形が多いカポの位置とダイアトニック表も。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yorozu-craft.com/web-metronome/capo/">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:image" content="https://yorozu-craft.com/web-metronome/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="yorozu-craft">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Google AdSense（計算の道具なので通常の自動広告） -->
+  <meta name="google-adsense-account" content="ca-pub-5375267956079717">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5375267956079717"
+     crossorigin="anonymous"></script>
+
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+  <link rel="stylesheet" href="./capo.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "カポ・移調の計算",
+    "url": "https://yorozu-craft.com/web-metronome/capo/",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "JPY" },
+    "inLanguage": "ja",
+    "browserRequirements": "Requires JavaScript"
+  }
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="top noprint" aria-label="このツールの中">
+      <a href="../">メトロノーム</a><a href="../piano/">ピアノ</a><a href="./guide.html">カポ・移調の使い方</a>
+    </nav>
+
+    <main>
+      <h1>カポ・移調の計算（ギターのコード変換）</h1>
+      <p class="lead noprint">コードを貼ると、移調とカポで弾く形を出します。入力は外部に送信しません。</p>
+
+      <fieldset>
+        <legend>曲のコード</legend>
+        <label for="text">コード譜</label>
+        <textarea id="text" spellcheck="false" autocomplete="off" placeholder="例: G D Em C"></textarea>
+        <p class="hint">歌詞ごと貼れます。コード以外はそのまま残ります。</p>
+        <div class="row2">
+          <div>
+            <label for="shift">キーを変える</label>
+            <select id="shift"></select>
+          </div>
+          <div>
+            <label for="capo">弾くときのカポ</label>
+            <select id="capo"></select>
+          </div>
+        </div>
+      </fieldset>
+
+      <section class="result" aria-live="polite" id="result">
+        <p class="big" id="big">—</p>
+        <p class="sub" id="sub">コードを入れると、ここに弾く形が出ます。</p>
+        <pre class="sheet" id="sheet"></pre>
+        <div class="btns">
+          <button type="button" class="primary" id="printBtn">印刷する</button>
+          <button type="button" id="shareBtn">共有リンクをコピー</button>
+        </div>
+        <p class="note noprint">キーは貼ったコードから推した目安です。数え方は<a href="./guide.html">使い方ページ</a>に。</p>
+      </section>
+
+      <section id="capoSection">
+        <h2>カポの位置ごとの弾く形</h2>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>カポ</th><th>形のキー</th><th>押さえやすい形</th><th>弾くコード</th></tr></thead>
+            <tbody id="capoBody"><tr><td colspan="4">—</td></tr></tbody>
+          </table>
+        </div>
+        <p class="note">カポの数字を押すとその形に変わります。押さえやすい形は、セーハを使わない基本の形の数です。</p>
+      </section>
+
+      <details id="sheetCapoBox">
+        <summary id="sheetCapoSum">譜面のカポ: なし</summary>
+        <label for="sheetCapo">貼った譜面のカポの位置</label>
+        <select id="sheetCapo"></select>
+        <p class="hint">「カポ 2」の譜面なら 2。鳴る音を求めてから計算します。</p>
+      </details>
+
+      <section id="diatonicSection">
+        <h2>ダイアトニックコード表</h2>
+        <label for="dkey">キー</label>
+        <select id="dkey"></select>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>度数</th><th>三和音</th><th>四和音</th></tr></thead>
+            <tbody id="dBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <p class="noprint"><a href="./guide.html">使い方・押さえやすい形の一覧・よくある質問</a></p>
+    </main>
+
+    <footer class="noprint">
+      <ul>
+        <li><a href="../../">yorozu-craft トップ</a></li>
+        <li><a href="../">メトロノーム</a></li>
+        <li><a href="../piano/">ブラウザピアノ</a></li>
+        <li><a href="./guide.html">使い方</a></li>
+        <li><a href="../../about.html">運営者情報</a></li>
+        <li><a href="../../privacy-policy.html">プライバシーポリシー</a></li>
+      </ul>
+    </footer>
+  </div>
+  <script src="./capo-core.js"></script>
+  <script src="./capo.js"></script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "b79bf821e1fd4b6683866d493b1de426"}'></script><!-- End Cloudflare Web Analytics -->
+</body>
+</html>
