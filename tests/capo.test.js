@@ -110,7 +110,9 @@ test('ページの決まり: 保存しない・共通ページへのリンク・
     const h = fs.readFileSync(path.join(root, 'capo', f), 'utf8');
     assert.ok(h.includes('href="../../about.html"') && h.includes('href="../../privacy-policy.html"'), f);
     assert.equal((h.match(/static\.cloudflareinsights\.com\/beacon\.min\.js/g) || []).length, 1, f);
-    assert.equal((h.match(/adsbygoogle\.js\?client=ca-pub-5375267956079717/g) || []).length, 1, f);
+    // index.html は AdSense 審査中（2026-10-04）なので広告 script を外し meta だけ
+    assert.equal((h.match(/adsbygoogle\.js\?client=ca-pub-5375267956079717/g) || []).length, f === 'index.html' ? 0 : 1, f);
+    assert.equal((h.match(/name="google-adsense-account"/g) || []).length, 1, f);
     assert.ok(h.includes(`<link rel="canonical" href="https://yorozu-craft.com/web-metronome/capo/${f === 'index.html' ? '' : f}">`), f);
   }
   assert.ok(idx.includes('aria-live="polite"'));
