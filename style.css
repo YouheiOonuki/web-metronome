@@ -1170,3 +1170,12 @@ select {
 .content-section details { margin: 0.3rem 0 0.6rem; }
 .content-section summary { cursor: pointer; color: var(--accent); font-size: 0.85rem; }
 .content-section details[open] summary { margin-bottom: 0.3rem; }
+
+/* この道具について（画面の後ろの折りたたみ。使い方ページの要約。AdSense 審査 2026-10-04）。h3・p・li は .content-section の書式 */
+.app-main details.about-tool {
+  background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+  padding: 0 1.25rem; margin-bottom: 1rem; box-shadow: 0 2px 8px var(--shadow);
+}
+details.about-tool > summary { cursor: pointer; min-height: 44px; padding: 0.7rem 0; color: var(--accent); font-weight: 600; font-size: 0.95rem; }
+details.about-tool[open] { padding-bottom: 1rem; }
+details.about-tool[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 0.5rem; }
