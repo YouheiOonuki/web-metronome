@@ -230,7 +230,7 @@ test('ページの決まり: 打ち込む画面は広告の script なし・使�
   assert.ok(idx.includes('static.cloudflareinsights.com'));
   const g = read('drum/guide.html');
   assert.ok(g.includes('adsbygoogle.js'));
-  assert.ok(g.includes('entry.585564634=web-metronome'));
+  assert.ok(g.includes('href="/post/?from=/web-metronome/drum/guide.html"')); // ご要望・不具合は投書箱へ（Google フォームから張り替え: yorozu-plans K161）
   for (const f of ['index.html', 'piano/index.html', 'drum/index.html']) {
     const h = read(f);
     const nav = /<nav class="mode-switch"[\s\S]*?<\/nav>/.exec(h)[0];
