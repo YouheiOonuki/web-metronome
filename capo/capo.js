@@ -38,7 +38,7 @@
     $('sheetCapoSum').textContent = '譜面のカポ: ' + (s.sheetCapo ? s.sheetCapo + ' フレット' : 'なし');
     if (!r.count) {
       $('big').textContent = '—';
-      $('sub').textContent = 'コードを入れると、ここに弾く形が出ます。';
+      $('sub').textContent = '';
       $('sheet').textContent = '';
       $('capoBody').innerHTML = '<tr><td colspan="4">—</td></tr>';
     } else {
