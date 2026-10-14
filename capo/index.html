@@ -48,13 +48,13 @@
 
     <main>
       <h1>カポ・移調の計算（ギターのコード変換）</h1>
-      <p class="lead noprint">コードを貼ると、移調とカポで弾く形を出します。入力は外部に送信しません。</p>
+      <!-- data-keep: A2 の定型（入力は端末の外に出ない） -->
+      <p class="lead noprint" data-keep>入力は外部に送信しません。</p>
 
       <fieldset>
         <legend>曲のコード</legend>
-        <label for="text">コード譜</label>
+        <label for="text">コード譜（歌詞ごと貼れる。コード以外はそのまま残る）</label>
         <textarea id="text" spellcheck="false" autocomplete="off" placeholder="例: G D Em C"></textarea>
-        <p class="hint">歌詞ごと貼れます。コード以外はそのまま残ります。</p>
         <div class="row2">
           <div>
             <label for="shift">キーを変える</label>
@@ -69,13 +69,15 @@
 
       <section class="result" aria-live="polite" id="result">
         <p class="big" id="big">—</p>
-        <p class="sub" id="sub">コードを入れると、ここに弾く形が出ます。</p>
+        <p class="sub" id="sub"></p>
         <pre class="sheet" id="sheet"></pre>
         <div class="btns">
           <button type="button" class="primary" id="printBtn">印刷する</button>
           <button type="button" id="shareBtn">共有リンクをコピー</button>
         </div>
-        <p class="note noprint">キーは貼ったコードから推した目安です。数え方は<a href="./guide.html">使い方ページ</a>に。</p>
+        <!-- data-keep: キーは推した目安であること。D117 と同じ役目 -->
+        <p class="note noprint" data-keep>キーは貼ったコードから推した目安です。</p>
+        <p class="note noprint"><a href="./guide.html">キーの数え方（使い方ページ）</a></p>
       </section>
 
       <section id="capoSection">
@@ -86,7 +88,6 @@
             <tbody id="capoBody"><tr><td colspan="4">—</td></tr></tbody>
           </table>
         </div>
-        <p class="note">カポの数字を押すとその形に変わります。押さえやすい形は、セーハを使わない基本の形の数です。</p>
       </section>
 
       <details id="sheetCapoBox">

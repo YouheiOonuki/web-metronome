@@ -102,10 +102,9 @@
 
         <!-- 拍インジケーター（タップでアクセント切替） -->
         <div class="beat-dots" id="beatDots" role="group" aria-label="拍とアクセント"></div>
-        <p class="beat-meta">
+        <div class="beat-meta">
           <span class="meter-label" id="meterLabel">4/4</span>
-          <span class="beat-hint">拍をタップでアクセント切替（強→中→弱→休）</span>
-        </p>
+        </div>
       </div>
 
       <div class="bpm-controls">
@@ -123,10 +122,6 @@
         <button class="btn btn-start" id="btnPlay" aria-pressed="false">▶ 再生</button>
         <button class="btn btn-secondary btn-tap" id="btnTap" aria-label="タップテンポ">TAP</button>
       </div>
-      <p class="tap-hint">TAP を曲に合わせて連続で押すと BPM を計測します</p>
-      <p class="shortcut-hint">
-        <kbd>Space</kbd> 再生/停止　<kbd>↑</kbd><kbd>↓</kbd> BPM ±1（<kbd>Shift</kbd> で ±10）　<kbd>T</kbd> タップ
-      </p>
     </section>
 
     <!-- ② 拍子・リズム -->
@@ -173,7 +168,6 @@
         </div>
       </div>
 
-      <p class="panel-note">BPM は 1 拍（分母の音符）あたりの数です。</p>
       <button class="btn btn-secondary" id="btnResetAccents" type="button">アクセントを初期化</button>
     </section>
 
@@ -209,11 +203,11 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <p class="practice-row">
+        <div class="practice-row" role="group" aria-label="テンポアップの設定">
           <input type="number" id="trainerEvery" min="1" max="64" value="4" aria-label="何小節ごと"> 小節ごとに
           <input type="number" id="trainerStep" min="1" max="50" value="2" aria-label="変化量"> BPM ずつ、
           <input type="number" id="trainerTarget" min="1" max="500" value="160" aria-label="目標 BPM"> BPM まで
-        </p>
+        </div>
       </div>
       <div class="practice-item">
         <div class="practice-head">
@@ -223,10 +217,10 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <p class="practice-row">
+        <div class="practice-row" role="group" aria-label="無音小節の設定">
           <input type="number" id="gapPlay" min="1" max="64" value="3" aria-label="鳴らす小節数"> 小節鳴らして
           <input type="number" id="gapMute" min="1" max="64" value="1" aria-label="無音にする小節数"> 小節無音
-        </p>
+        </div>
       </div>
     </section>
 

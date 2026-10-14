@@ -520,11 +520,6 @@ body {
   color: var(--text-primary);
 }
 
-.beat-hint {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
 /* ===========================
    BPM 操作・再生
    =========================== */
@@ -574,26 +569,6 @@ body {
 .btn-start.playing {
   background-color: var(--btn-danger-bg);
   color: var(--btn-danger-text);
-}
-
-.tap-hint {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-align: center;
-  margin-top: 0.5rem;
-}
-
-/* キーボードショートカット案内（タッチ端末では非表示） */
-.shortcut-hint {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-align: center;
-  line-height: 2;
-  margin-top: 0.25rem;
-}
-
-@media (hover: none) {
-  .shortcut-hint { display: none; }
 }
 
 kbd {
@@ -786,12 +761,6 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .segmented input:focus-visible + span { outline: 4px solid var(--focus-ring); outline-offset: 2px; box-shadow: 0 0 0 2px var(--focus); }   /* 見えない選択肢の代わりに共通の輪（DADS） */
-
-.panel-note {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.75rem;
-}
 
 /* ===========================
    練習モード
