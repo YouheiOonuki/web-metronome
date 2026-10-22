@@ -242,3 +242,13 @@ test('ページの決まり: 打ち込む画面は広告の script なし・使�
   assert.ok(read('sitemap.xml').includes('https://yorozu-craft.com/web-metronome/drum/'));
   assert.ok(!/localStorage\.(setItem|getItem)\(\s*['"](?!web-metronome_)/.test(read('drum/drum.js')));
 });
+
+// K191 段 3 F2: 共有リンクの単位・刻みに継承したキー（constructor・__proto__・valueOf）が来ても既定に戻す（自分のキーだけ通す）
+test('normalizeState: 単位・刻みは自分のキーだけ（constructor などは既定に）', () => {
+  for (const bad of ['constructor', '__proto__', 'valueOf', 'toString']) {
+    const s = Core.normalizeState({ unit: bad, grid: bad });
+    assert.ok(Number.isFinite(Core.stepSeconds(100, s.unit, s.grid)), bad);
+    assert.notEqual(s.unit, bad);
+    assert.notEqual(s.grid, bad);
+  }
+});

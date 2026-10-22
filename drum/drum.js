@@ -183,7 +183,7 @@
     while (true) {
       if (stepIdx >= n) { loopStart += timing.loop; stepIdx = 0; }
       const t = loopStart + timing.times[stepIdx];
-      if (t > ctx.currentTime + 0.12) break;
+      if (!Number.isFinite(t) || t > ctx.currentTime + 0.12) break;   // 時刻が数でないときも抜ける（K191 段 3 F2。継承したキーの単位で NaN になり無限ループした）
       if (t >= ctx.currentTime - 0.02) {
         for (const tr of Core.TRACKS) {
           const v = st.pattern[tr.id][stepIdx];

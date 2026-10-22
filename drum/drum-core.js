@@ -128,10 +128,10 @@
     }
     s.num = clampInt(raw.num, 1, 16, DEFAULTS.num);
     s.den = DENOMS.includes(Number(raw.den)) ? Number(raw.den) : DEFAULTS.den;
-    s.grid = GRIDS[raw.grid] ? raw.grid : DEFAULTS.grid;
+    s.grid = Object.prototype.hasOwnProperty.call(GRIDS, raw.grid) ? raw.grid : DEFAULTS.grid;
     s.bars = clampInt(raw.bars, 1, 4, DEFAULTS.bars);
     s.bpm = clampInt(raw.bpm, BPM_MIN, BPM_MAX, DEFAULTS.bpm);
-    s.unit = TEMPO_UNITS[raw.unit] ? raw.unit : DEFAULTS.unit;
+    s.unit = Object.prototype.hasOwnProperty.call(TEMPO_UNITS, raw.unit) ? raw.unit : DEFAULTS.unit;
     s.swing = clampInt(raw.swing, 50, 75, DEFAULTS.swing);
     s.volume = clampInt(raw.volume, 0, 100, DEFAULTS.volume);
     s.loops = clampInt(raw.loops, 1, 32, DEFAULTS.loops);
