@@ -85,11 +85,11 @@ textarea { min-height: 128px; font-family: ui-monospace, "SFMono-Regular", Menlo
 .result { margin-top: var(--sp-3); }
 .result .sub { margin: var(--sp-1) 0 var(--sp-2); color: var(--muted); }
 pre.sheet {
-  margin: 0; padding: var(--sp-3); background: var(--bg); border-radius: var(--radius); overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  margin: 0; padding: var(--sp-3); overflow-x: auto; white-space: pre-wrap; word-break: break-word;
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Noto Sans Mono CJK JP", monospace; font-size: 1rem; line-height: 1.6;
 }
 .btns { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: var(--sp-3) 0 0; }
-.notice, .hint { margin-top: var(--sp-2); }
+.hint { margin-top: var(--sp-2); }
 table { border-collapse: collapse; width: 100%; background: var(--card); }
 th, td { border: 1px solid var(--border); padding: var(--sp-2); text-align: left; vertical-align: top; word-break: keep-all; }
 th { background: var(--bg-2); font-weight: 700; }
@@ -97,7 +97,6 @@ tr.cur td { background: var(--accent-soft); }
 td button { padding: var(--sp-1) var(--sp-3); white-space: nowrap; }
 td button[aria-pressed="true"] { background: var(--accent-soft); border: 2px solid var(--accent); font-weight: 800; }
 td.shapes { font-family: ui-monospace, Menlo, Consolas, monospace; word-break: normal; }
-.tag { display: inline-block; font-size: var(--fs-s); border: 1px solid var(--accent); color: var(--accent); border-radius: var(--radius); padding: 0 var(--sp-1); margin-left: var(--sp-1); white-space: nowrap; }
 details.card { padding: 0 var(--sp-4); margin: var(--sp-3) 0 0; }
 details.card > summary { white-space: normal; }   /* 長い summary を折り返す */
 details.card[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: var(--sp-2); }

@@ -175,10 +175,10 @@ function loadSettings() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
     if (saved && typeof saved === 'object') {
-      Object.assign(s, saved, {
-        trainer: { ...s.trainer, ...saved.trainer },
-        gap:     { ...s.gap, ...saved.gap },
-      });
+      // 写すのは今の設定のキーだけ（消した設定〈テーマなど〉が保存に残っていても読まない・書き戻さない）
+      for (const k of Object.keys(DEFAULTS)) if (k in saved) s[k] = saved[k];
+      s.trainer = { ...DEFAULTS.trainer, ...saved.trainer };
+      s.gap     = { ...DEFAULTS.gap, ...saved.gap };
     } else {
       s.bpm = toInt(localStorage.getItem(LEGACY_BPM_KEY), s.bpm);
     }

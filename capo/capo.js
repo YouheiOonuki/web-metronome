@@ -60,7 +60,7 @@
         const cell = document.createElement('td'); cell.appendChild(b); tr.appendChild(cell);
         td(row.key.en);
         const o = td(row.open + ' / ' + row.total);
-        if (row.capo === r.best) { const t = document.createElement('span'); t.className = 'tag'; t.textContent = 'いちばん多い'; o.appendChild(t); }
+        if (row.capo === r.best) { const t = document.createElement('strong'); t.textContent = '（いちばん多い）'; o.appendChild(t); }
         td(row.shapes.join(' '), 'shapes');
         body.appendChild(tr);
       }
