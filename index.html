@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja" data-theme="washi">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +27,8 @@
   <meta name="twitter:description" content="BPM を決めて再生を押すだけ。変則拍子・アクセント・裏拍に対応した無料メトロノーム。">
 
   <!-- テーマカラー -->
-  <meta name="theme-color" content="#8b4513">
+  <meta name="theme-color" content="#eef0f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#15191d" media="(prefers-color-scheme: dark)">
 
   <!-- PWA（ホーム画面に追加・オフライン対応） -->
   <link rel="manifest" href="./manifest.webmanifest">
@@ -60,7 +61,6 @@
       "タップテンポ",
       "テンポアップ練習・無音小節練習",
       "3種類の音色と音量調整",
-      "6種類のテーマ",
       "ホーム画面に追加・オフライン動作"
     ]
   }
@@ -68,16 +68,6 @@
 
   <!-- Google AdSense: サイト所有確認の meta だけ。AdSense 審査が通るまで本文の薄いページは広告 script を外す（2026-10-04）。通ったら本文を足してから戻す -->
   <meta name="google-adsense-account" content="ca-pub-5375267956079717">
-
-  <!-- 保存済みのテーマを描画前に適用する（読み込み時のちらつき防止） -->
-  <script>
-    try {
-      var savedTheme = JSON.parse(localStorage.getItem('metronome-settings') || '{}').theme;
-      if (/^(washi|mori|aizome|dark|metal|neon)$/.test(savedTheme)) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      }
-    } catch (e) {}
-  </script>
 
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./style.css">
@@ -94,7 +84,7 @@
   <main class="app-main">
 
     <!-- ① メトロノーム（最上部） -->
-    <section class="metronome-section" id="metronomeSection" aria-label="メトロノーム">
+    <section class="card metronome-section" id="metronomeSection" aria-label="メトロノーム">
       <div class="tempo-display">
         <div class="bpm-display" id="bpmDisplay" aria-live="polite">120</div>
         <div class="bpm-label">BPM</div>
@@ -108,9 +98,9 @@
       </div>
 
       <div class="bpm-controls">
-        <button class="btn btn-secondary btn-round btn-hold" id="btnMinus" aria-label="BPM を下げる">−</button>
+        <button class="btn btn-step btn-hold" id="btnMinus" aria-label="BPM を下げる">−</button>
         <input type="range" id="bpmSlider" min="1" max="500" value="120" aria-label="BPM スライダー">
-        <button class="btn btn-secondary btn-round btn-hold" id="btnPlus" aria-label="BPM を上げる">＋</button>
+        <button class="btn btn-step btn-hold" id="btnPlus" aria-label="BPM を上げる">＋</button>
       </div>
 
       <div class="bpm-input-row">
@@ -119,13 +109,13 @@
       </div>
 
       <div class="play-controls">
-        <button class="btn btn-start" id="btnPlay" aria-pressed="false">▶ 再生</button>
-        <button class="btn btn-secondary btn-tap" id="btnTap" aria-label="タップテンポ">TAP</button>
+        <button class="btn-primary btn-play" id="btnPlay" aria-pressed="false">▶ 再生</button>
+        <button class="btn btn-tap" id="btnTap" aria-label="タップテンポ">TAP</button>
       </div>
     </section>
 
     <!-- ② 拍子・リズム -->
-    <section class="rhythm-section" aria-labelledby="rhythmHeading">
+    <section class="card rhythm-section" aria-labelledby="rhythmHeading">
       <h2 id="rhythmHeading">拍子・リズム</h2>
 
       <div class="field">
@@ -136,9 +126,9 @@
       <div class="field">
         <span class="field-label" id="meterFieldLabel">拍子</span>
         <div class="meter-editor" role="group" aria-labelledby="meterFieldLabel">
-          <button class="btn btn-secondary btn-round btn-round-sm btn-hold" id="btnBeatsMinus" aria-label="拍数を減らす">−</button>
+          <button class="btn btn-step btn-hold" id="btnBeatsMinus" aria-label="拍数を減らす">−</button>
           <span class="beats-value" id="beatsValue" aria-live="polite">4</span>
-          <button class="btn btn-secondary btn-round btn-round-sm btn-hold" id="btnBeatsPlus" aria-label="拍数を増やす">＋</button>
+          <button class="btn btn-step btn-hold" id="btnBeatsPlus" aria-label="拍数を増やす">＋</button>
           <span class="meter-slash">/</span>
           <select id="unitSelect" aria-label="拍の音符（分母）">
             <option value="2">2</option>
@@ -168,11 +158,11 @@
         </div>
       </div>
 
-      <button class="btn btn-secondary" id="btnResetAccents" type="button">アクセントを初期化</button>
+      <button class="btn" id="btnResetAccents" type="button">アクセントを初期化</button>
     </section>
 
     <!-- ③ サウンド -->
-    <section class="sound-section" aria-labelledby="soundHeading">
+    <section class="card sound-section" aria-labelledby="soundHeading">
       <h2 id="soundHeading">サウンド</h2>
       <div class="field">
         <label for="soundSelect">音色</label>
@@ -193,7 +183,7 @@
     </section>
 
     <!-- ④ 練習モード -->
-    <section class="practice-section" aria-labelledby="practiceHeading">
+    <section class="card practice-section" aria-labelledby="practiceHeading">
       <h2 id="practiceHeading">練習モード</h2>
       <div class="practice-item">
         <div class="practice-head">
@@ -225,20 +215,9 @@
     </section>
 
     <!-- ⑤ 設定（最下部） -->
-    <section class="settings-panel" aria-label="設定">
+    <section class="card settings-panel" aria-label="設定">
       <h2>設定</h2>
       <div class="settings-grid">
-        <div class="setting-item">
-          <label for="themeSelect">テーマ</label>
-          <select id="themeSelect" aria-label="テーマの選択">
-            <option value="washi">和紙風</option>
-            <option value="mori">森</option>
-            <option value="aizome">藍染</option>
-            <option value="dark">ダーク</option>
-            <option value="metal">メタル</option>
-            <option value="neon">ネオンサイバー</option>
-          </select>
-        </div>
         <!-- 画面のスリープ防止（対応ブラウザのみ表示） -->
         <div class="setting-item" id="wakeLockSetting" hidden>
           <label for="wakeLockToggle">再生中は画面を消さない</label>
@@ -250,17 +229,17 @@
         <!-- ホーム画面への追加（インストールできるブラウザのみ表示） -->
         <div class="setting-item" id="installSetting" hidden>
           <span class="setting-label">アプリ</span>
-          <button class="btn btn-secondary" id="btnInstall" type="button">ホーム画面に追加</button>
+          <button class="btn" id="btnInstall" type="button">ホーム画面に追加</button>
         </div>
-        <div class="setting-item">
+        <div class="setting-item setting-wide">
           <span class="setting-label">保存</span>
-          <button type="button" class="btn btn-secondary" data-reset-storage="metronome-settings" data-reset-legacy="bpm">保存した内容をすべて消す（初期状態に戻す）</button>
+          <button type="button" class="btn" data-reset-storage="metronome-settings" data-reset-legacy="bpm">保存した内容をすべて消す（初期状態に戻す）</button>
         </div>
       </div>
     </section>
 
     <!-- about-tool: 道具の説明（使い方ページの要約。AdSense 審査 2026-10-04） -->
-    <details class="about-tool content-section" id="about-tool">
+    <details class="card about-tool content-section" id="about-tool">
       <summary>この道具について（使い方・計算のしくみ・注意）</summary>
       <h3>メトロノームでできること</h3>
       <p>BPM 1〜500 のテンポでクリック音を鳴らします。4/4・3/4・6/8 のほか 5/8・7/8 などの変則拍子、裏拍や3連の刻み、少しずつ速くする練習にも対応し、楽器の基礎練習、合奏前のテンポ合わせ、リズム感のトレーニングに使います。</p>

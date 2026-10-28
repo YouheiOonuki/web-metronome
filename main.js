@@ -75,9 +75,6 @@ const LEVEL_GAIN  = { 3: 1.0, 2: 0.8, 1: 0.6, sub: 0.45 };
 const LEVEL_PITCH = { 3: 2.0, 2: 1.5, 1: 1.0, sub: 0.75 };
 const SOUNDS = ['beep', 'wood', 'hihat'];
 
-/** 見た目のテーマ（web-roulette と共通の 6 種類） */
-const THEMES = ['washi', 'mori', 'aizome', 'dark', 'metal', 'neon'];
-
 const DEFAULTS = {
   bpm: 120,
   beats: 4,
@@ -90,7 +87,6 @@ const DEFAULTS = {
   subVolume: 0.5,
   trainer: { enabled: false, everyBars: 4, step: 2, target: 160 },
   gap:     { enabled: false, playBars: 3, muteBars: 1 },
-  theme: 'washi',
   wakeLock: true,          // 再生中は画面を消さない
 };
 
@@ -129,7 +125,6 @@ const gapPlay         = $('gapPlay');
 const gapMute         = $('gapMute');
 const subdivisionRadios = document.querySelectorAll('input[name="subdivision"]');
 const metronomeSection = $('metronomeSection');
-const themeSelect      = $('themeSelect');
 const wakeLockSetting  = $('wakeLockSetting');
 const wakeLockToggle   = $('wakeLockToggle');
 const installSetting   = $('installSetting');
@@ -210,7 +205,6 @@ function loadSettings() {
   s.gap.enabled       = !!s.gap.enabled;
   s.gap.playBars      = clamp(toInt(s.gap.playBars, 3), 1, 64);
   s.gap.muteBars      = clamp(toInt(s.gap.muteBars, 1), 1, 64);
-  s.theme    = THEMES.includes(s.theme) ? s.theme : DEFAULTS.theme;
   s.wakeLock = s.wakeLock !== false;
   return s;
 }
@@ -598,16 +592,6 @@ function releaseWakeLock() {
   wakeLock = null;
 }
 
-// =============================================
-// テーマ
-// =============================================
-
-function applyTheme(theme) {
-  settings.theme = THEMES.includes(theme) ? theme : DEFAULTS.theme;
-  document.documentElement.setAttribute('data-theme', settings.theme);
-  themeSelect.value = settings.theme;
-}
-
 function togglePlayback() {
   if (isPlaying) stopMetronome();
   else startMetronome();
@@ -725,7 +709,6 @@ function renderControls() {
   gapEnabled.checked = settings.gap.enabled;
   gapPlay.value      = settings.gap.playBars;
   gapMute.value      = settings.gap.muteBars;
-  applyTheme(settings.theme);
   wakeLockToggle.checked = settings.wakeLock;
   wakeLockSetting.hidden = !('wakeLock' in navigator);
 }
@@ -892,11 +875,7 @@ function bindEvents() {
   bindNumber(gapPlay, 1, 64, (v) => { settings.gap.playBars = v; });
   bindNumber(gapMute, 1, 64, (v) => { settings.gap.muteBars = v; });
 
-  // 設定: テーマ・画面スリープ防止
-  themeSelect.addEventListener('change', () => {
-    applyTheme(themeSelect.value);
-    saveSettings();
-  });
+  // 設定: 画面スリープ防止
   wakeLockToggle.addEventListener('change', () => {
     settings.wakeLock = wakeLockToggle.checked;
     if (settings.wakeLock) requestWakeLock();
