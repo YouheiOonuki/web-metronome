@@ -26,7 +26,6 @@ API を一切使用せず、HTML / CSS / JavaScript の静的サイトとして�
 
 ### その他の機能
 - **音色・音量**: 電子音 / ウッドブロック / ハイハット。全体音量と細分化の音量を個別調整
-- **6種類のテーマ**: 和紙風 / 森 / 藍染 / ダーク / メタル / ネオンサイバー（web-roulette と共通）
 - **再生中は画面を消さない**: Screen Wake Lock API（対応ブラウザのみ）
 - **キーボード操作**: Space で再生/停止、↑↓ で BPM ±1（Shift で ±10）、T でタップ
 - **設定の記憶**: BPM・拍子・アクセントなどを localStorage に保存し、次回起動時に復元
@@ -84,7 +83,7 @@ API を一切使用せず、HTML / CSS / JavaScript の静的サイトとして�
 ```
 web-metronome/
 ├── index.html              # メインHTML（SEOメタタグ・構造化データ含む）
-├── style.css               # テーマ対応スタイルシート（先頭の yorozu-common の印の間はサイト共通の部品。手で直さない。正本は youheioonuki.github.io の tools/common/）
+├── style.css               # スタイルシート（先頭の yorozu-common の印の間はサイト共通の部品。手で直さない。正本は youheioonuki.github.io の tools/common/）
 ├── main.js                 # アプリケーションロジック
 ├── sw.js                   # Service Worker（オフライン対応）
 ├── manifest.webmanifest    # PWA の設定（アプリ名・アイコンなど）
