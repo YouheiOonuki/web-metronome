@@ -1,4 +1,4 @@
-/* カポ・移調（/web-metronome/capo/）。色はトークンだけで決める（SCREEN 5 章） */
+/* カポ・移調（/web-metronome/capo/）。yorozu-common v2 の皮（yorozu-plans DESIGN.md）に載せ替え（K192 段 3 の 2）。色はトークンだけで決める（SCREEN 5 章） */
 /* yorozu-common:begin v2 — サイト共通の土台と皮。正本は youheioonuki.github.io の tools/common/v2/base.css と skin.css（yorozu-plans DESIGN.md）。
    この begin〜end の間は手で直さない（tools/sync-common.mjs で全ツールに配る。ツール固有の上書きは end の後に書く） */
 /* yorozu-common v2 土台の層（yorozu-plans ROADMAP 7.98 D369、DESIGN.md）。すべてのページ（見せる・遊ぶ・世界を持つページも）に当てる。
@@ -68,85 +68,56 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 :where(html:not([data-skin="base"])) :where(.fixed-bar) { position: sticky; bottom: 0; background: var(--card); border-top: 1px solid var(--border); padding: var(--sp-2) var(--sp-4); }
 /* yorozu-common:end */
 
-:root {
-  --bg: #f7f5f0; --card: #ffffff; --text: #1f1d1a; --muted: #5d5850; --accent: #8a4b14; --border: #d9d3c7;
-  --hl: #fff3d6; --ok: #1d6b3a;
-}
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #161513; --card: #22201d; --text: #ece8e1; --muted: #b3ab9f; --accent: #f0a860; --border: #47423b; --hl: #3a3020; --ok: #7fd39b; }
-}
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0; background: var(--bg); color: var(--text); line-height: 1.7;
-  font-family: "Noto Sans JP", "Noto Sans CJK JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-}
-a { color: var(--accent); }
-.wrap { max-width: 720px; margin: 0 auto; padding: 12px 16px 32px; }
-.top { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 14px; padding: 8px 0; }
-.top a { display: inline-block; padding: 10px 0; min-height: 44px; }
-h1 { font-size: 22px; line-height: 1.4; margin: 4px 0 4px; }
-.lead { margin: 0 0 12px; color: var(--muted); font-size: 15px; }
-h2 { font-size: 18px; margin: 28px 0 8px; }
-fieldset { border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 12px 14px 14px; margin: 0; }
-legend { font-weight: 700; padding: 0 6px; }
-label { display: block; font-weight: 600; margin: 10px 0 4px; }
-.hint { font-size: 13px; color: var(--muted); margin: 2px 0 0; }
-textarea, select {
-  font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; width: 100%;
-}
-textarea { min-height: 128px; padding: 8px 10px; font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Noto Sans Mono CJK JP", monospace; font-size: 16px; resize: vertical; }
-select { min-height: 44px; padding: 6px 8px; font-size: 16px; }
-textarea::placeholder { color: var(--muted); opacity: 1; }   /* 例の字も 4.5:1（ブラウザ既定の灰色は 4.2:1。REVIEW C9） */
-.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; }
-.result { margin-top: 12px; border: 2px solid var(--accent); border-radius: 10px; background: var(--card); padding: 12px 14px; }
-.result .big { font-size: 20px; font-weight: 700; margin: 0; }
-.result .sub { margin: 2px 0 8px; color: var(--muted); font-size: 14px; }
+/* 色・字・角・線は皮のトークンだけを使う。ここに書くのは配置とこの道具だけの部品 */
+.wrap { max-width: 720px; margin: 0 auto; padding: var(--sp-3) var(--sp-4) var(--sp-8); }
+.top { display: flex; flex-wrap: wrap; gap: 0 var(--sp-4); font-size: var(--fs-s); }
+.top a { display: inline-flex; align-items: center; min-height: var(--tap); }
+h1 { margin: var(--sp-1) 0; }
+.lead { margin: 0 0 var(--sp-3); }
+h2 { margin: var(--sp-6) 0 var(--sp-2); }
+fieldset.card { min-width: 0; }
+legend { font-weight: 800; padding: 0 var(--sp-2); }
+label { display: block; font-weight: 700; margin: var(--sp-3) 0 var(--sp-1); }
+.hint { font-size: var(--fs-s); color: var(--muted); margin: var(--sp-1) 0 0; }
+textarea, select { width: 100%; }
+textarea { min-height: 128px; font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Noto Sans Mono CJK JP", monospace; resize: vertical; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--sp-3); }
+.result { margin-top: var(--sp-3); }
+.result .sub { margin: var(--sp-1) 0 var(--sp-2); color: var(--muted); }
 pre.sheet {
-  margin: 0; padding: 10px; background: var(--bg); border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-break: break-word;
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Noto Sans Mono CJK JP", monospace; font-size: 16px; line-height: 1.6;
+  margin: 0; padding: var(--sp-3); overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Noto Sans Mono CJK JP", monospace; font-size: 1rem; line-height: 1.6;
 }
-.btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
-button {
-  font: inherit; font-size: 15px; min-height: 44px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--accent);
-  background: var(--card); color: var(--accent); cursor: pointer;
-}
-button.primary { background: var(--accent); color: var(--card); font-weight: 700; }
-.note { font-size: 14px; color: var(--muted); margin: 8px 0 0; }
-table { border-collapse: collapse; width: 100%; font-size: 15px; background: var(--card); }
-th, td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
-th { background: var(--bg); font-weight: 600; }
-tr.cur td { background: var(--hl); }
-td button[aria-pressed="true"] { background: var(--accent); color: var(--card); font-weight: 700; }
-td.shapes { font-family: ui-monospace, Menlo, Consolas, monospace; }
-.tag { display: inline-block; font-size: 12px; border: 1px solid var(--ok); color: var(--ok); border-radius: 4px; padding: 0 4px; margin-left: 4px; white-space: nowrap; }
-td button { min-height: 40px; padding: 4px 10px; font-size: 14px; white-space: nowrap; }
-th, td { word-break: keep-all; }
-td.shapes { word-break: normal; }
-details { border: 1px solid var(--border); border-radius: 10px; background: var(--card); padding: 0 14px; margin: 12px 0 0; }
-details > summary { cursor: pointer; padding: 12px 0; min-height: 44px; font-weight: 600; }
-details[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: 8px; }
-details > :last-child { margin-bottom: 12px; }
+.btns { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: var(--sp-3) 0 0; }
+.hint { margin-top: var(--sp-2); }
+table { border-collapse: collapse; width: 100%; background: var(--card); }
+th, td { border: 1px solid var(--border); padding: var(--sp-2); text-align: left; vertical-align: top; word-break: keep-all; }
+th { background: var(--bg-2); font-weight: 700; }
+tr.cur td { background: var(--accent-soft); }
+td button { padding: var(--sp-1) var(--sp-3); white-space: nowrap; }
+td button[aria-pressed="true"] { background: var(--accent-soft); border: 2px solid var(--accent); font-weight: 800; }
+td.shapes { font-family: ui-monospace, Menlo, Consolas, monospace; word-break: normal; }
+details.card { padding: 0 var(--sp-4); margin: var(--sp-3) 0 0; }
+details.card > summary { white-space: normal; }   /* 長い summary を折り返す */
+details.card[open] > summary { border-bottom: 1px solid var(--border); margin-bottom: var(--sp-2); }
+details.card > :last-child { margin-bottom: var(--sp-3); }
 .scroll { overflow-x: auto; }
-footer { margin-top: 32px; border-top: 1px solid var(--border); padding-top: 12px; font-size: 14px; }
-footer ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0 16px; }
-footer a { display: inline-block; padding: 10px 0; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+footer { margin-top: var(--sp-8); border-top: 1px solid var(--border); font-size: var(--fs-s); }
+footer ul { list-style: none; display: flex; flex-wrap: wrap; gap: 0 var(--sp-4); }
+footer a { display: inline-flex; align-items: center; min-height: var(--tap); }
 /* 使い方ページ */
-.guide h2 { border-bottom: 1px solid var(--border); padding-bottom: 4px; }
-.guide .open { display: inline-block; margin: 4px 0 8px; padding: 12px 20px; border-radius: 8px; background: var(--accent); color: var(--card); font-weight: 700; text-decoration: none; }
-@media print {
-  ins.adsbygoogle, .google-auto-placed, iframe[id^="aswift"], iframe[id^="google_ads"] { display: none !important; }
-  :root { --bg: #fff; --card: #fff; --text: #000; --muted: #333; --border: #999; --hl: #fff; }
-  .noprint, .top, footer, fieldset, details, .btns, #capoSection, #diatonicSection { display: none !important; }
-  .result { border: 0; padding: 0; }
-  pre.sheet { background: #fff; padding: 0; font-size: 12pt; }
-  .print-only { display: block !important; }
-}
-.print-only { display: none; }
+.guide h2 { border-bottom: 1px solid var(--border); padding-bottom: var(--sp-1); }
+a.btn.open { display: inline-flex; align-items: center; min-height: var(--tap); margin: var(--sp-1) 0 var(--sp-2); padding: 0 var(--sp-4); color: var(--text); text-decoration: none; }
 
 /* この道具について（結果の後ろの折りたたみ。使い方ページの要約。AdSense 審査 2026-10-04） */
-details.about-tool > summary { white-space: normal; }   /* 長い summary を折り返す */
-details.about-tool h3 { font-size: 0.95rem; margin: 0.9rem 0 0.3rem; }
-details.about-tool p, details.about-tool li { font-size: 0.9rem; line-height: 1.75; }
-details.about-tool ul { padding-left: 1.2rem; margin: 0.3rem 0 0.5rem; }
+details.about-tool h3 { margin: var(--sp-4) 0 var(--sp-1); }
+details.about-tool p, details.about-tool li { line-height: 1.75; }
+details.about-tool ul { padding-left: 1.2rem; margin: var(--sp-1) 0 var(--sp-2); }
+
+/* 印刷: 暗い表示のまま紙に出ないよう、地を白・字を黒にする */
+@media print {
+  :root { --bg: #fff; --bg-2: #fff; --card: #fff; --text: #000; --muted: #333; --border: #999; --accent-soft: #fff; }
+  .noprint, .top, footer, fieldset, details, .btns, #capoSection, #diatonicSection { display: none !important; }
+  .result { border: 0; padding: 0; }
+  pre.sheet { padding: 0; font-size: 12pt; }
+}
