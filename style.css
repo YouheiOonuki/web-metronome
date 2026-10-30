@@ -108,9 +108,9 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 :where(html[data-skin="base"]) .app-main h2 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
 :where(html[data-skin="base"]) .content-section { line-height: 1.8; }
 :where(html[data-skin="base"]) .content-section h2 { margin-top: 0.5rem; }
-:where(html[data-skin="base"]) .content-section p { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+:where(html[data-skin="base"]) .content-section p { font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
 :where(html[data-skin="base"]) .content-section ul, :where(html[data-skin="base"]) .content-section ol { padding-left: 1.2rem; margin-bottom: 0.5rem; }
-:where(html[data-skin="base"]) .content-section li { font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
+:where(html[data-skin="base"]) .content-section li { font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.3rem; }
 :where(html[data-skin="base"]) .faq-list { margin-top: 0.5rem; }
 :where(html[data-skin="base"]) .faq-list dt { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); margin-top: 0.8rem; padding: 0.3rem 0; }
 :where(html[data-skin="base"]) .faq-list dt::before { content: 'Q. '; color: var(--accent); font-weight: 700; }
