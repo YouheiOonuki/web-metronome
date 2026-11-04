@@ -79,6 +79,7 @@
       const name = document.createElement('span');
       name.className = 'name';
       el.appendChild(name);
+      el.appendChild(document.createTextNode(' ')); // 音名とキーの文字を読み上げ・axe で「C3Z」とつなげない（flex の中なので描画されない）
       const kb = document.createElement('span');
       kb.className = 'kbd';
       el.appendChild(kb);
@@ -105,8 +106,9 @@
       else name.textContent = black ? '' : Core.noteName(midi, 'cde');
       const codes = Core.codesForMidi(midi, Core.keyboardBase(settings.start));
       kb.textContent = showLabels() ? codes.map((c) => Core.keyLabel(c, settings.layout, learned)).join(' ') : '';
-      // 名前は音名＋鍵に見えているキーの文字（見えている文字を名前が含むように。WCAG 2.5.3）
-      el.setAttribute('aria-label', Core.noteName(midi, 'doremi') + '（' + Core.noteName(midi, 'cde') + '）' + (kb.textContent ? ' ' + kb.textContent : ''));
+      // 名前は 鍵に見えている音名（もう一方の音名）＋見えているキーの文字。見えている文字を名前が同じ順で含むように（WCAG 2.5.3）
+      const [first, second] = settings.names === 'cde' && !black ? ['cde', 'doremi'] : ['doremi', 'cde'];
+      el.setAttribute('aria-label', Core.noteName(midi, first) + '（' + Core.noteName(midi, second) + '）' + (kb.textContent ? ' ' + kb.textContent : ''));
     }
   }
 
