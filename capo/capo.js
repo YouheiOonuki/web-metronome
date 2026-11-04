@@ -69,6 +69,7 @@
     renderDiatonic();
     const h = C.encodeState(s);
     try { history.replaceState(null, '', h ? '#' + h : location.pathname); } catch (e) { /* file:// など */ }
+    window.yzUsed?.();
   }
 
   function renderDiatonic() {
