@@ -69,7 +69,6 @@
       el.className = k.black ? 'key black' : 'key white';
       el.dataset.midi = String(k.midi);
       el.setAttribute('role', 'button');
-      el.setAttribute('aria-label', Core.noteName(k.midi, 'doremi') + '（' + Core.noteName(k.midi, 'cde') + '）');
       if (k.black) {
         el.style.left = ((k.whiteIndex + 1) * ww - ww * 0.3) + '%';
         el.style.width = (ww * 0.6) + '%';
@@ -80,6 +79,7 @@
       const name = document.createElement('span');
       name.className = 'name';
       el.appendChild(name);
+      el.appendChild(document.createTextNode(' ')); // 音名とキーの文字を読み上げ・axe で「C3Z」とつなげない（flex の中なので描画されない）
       const kb = document.createElement('span');
       kb.className = 'kbd';
       el.appendChild(kb);
@@ -106,6 +106,9 @@
       else name.textContent = black ? '' : Core.noteName(midi, 'cde');
       const codes = Core.codesForMidi(midi, Core.keyboardBase(settings.start));
       kb.textContent = showLabels() ? codes.map((c) => Core.keyLabel(c, settings.layout, learned)).join(' ') : '';
+      // 名前は 鍵に見えている音名（もう一方の音名）＋見えているキーの文字。見えている文字を名前が同じ順で含むように（WCAG 2.5.3）
+      const [first, second] = settings.names === 'cde' && !black ? ['cde', 'doremi'] : ['doremi', 'cde'];
+      el.setAttribute('aria-label', Core.noteName(midi, first) + '（' + Core.noteName(midi, second) + '）' + (kb.textContent ? ' ' + kb.textContent : ''));
     }
   }
 
