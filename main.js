@@ -535,6 +535,7 @@ function startMetronome() {
   btnPlay.setAttribute('aria-pressed', 'true');
   metronomeSection.classList.add('playing');
   requestWakeLock();
+  window.yzUsed?.();
 }
 
 function stopMetronome() {
