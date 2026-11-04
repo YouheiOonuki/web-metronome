@@ -69,7 +69,6 @@
       el.className = k.black ? 'key black' : 'key white';
       el.dataset.midi = String(k.midi);
       el.setAttribute('role', 'button');
-      el.setAttribute('aria-label', Core.noteName(k.midi, 'doremi') + '（' + Core.noteName(k.midi, 'cde') + '）');
       if (k.black) {
         el.style.left = ((k.whiteIndex + 1) * ww - ww * 0.3) + '%';
         el.style.width = (ww * 0.6) + '%';
@@ -106,6 +105,8 @@
       else name.textContent = black ? '' : Core.noteName(midi, 'cde');
       const codes = Core.codesForMidi(midi, Core.keyboardBase(settings.start));
       kb.textContent = showLabels() ? codes.map((c) => Core.keyLabel(c, settings.layout, learned)).join(' ') : '';
+      // 名前は音名＋鍵に見えているキーの文字（見えている文字を名前が含むように。WCAG 2.5.3）
+      el.setAttribute('aria-label', Core.noteName(midi, 'doremi') + '（' + Core.noteName(midi, 'cde') + '）' + (kb.textContent ? ' ' + kb.textContent : ''));
     }
   }
 
